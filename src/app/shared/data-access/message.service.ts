@@ -43,12 +43,11 @@ export class MessageService {
   private getMessages() {
     const messagesCollection = query(
       collection(this.firestore, 'messages'),
-    //   orderBy('created', 'desc'),
+      //   orderBy('created', 'desc'),
       limit(50)
     );
 
     return collectionData(messagesCollection, { idField: 'id' }).pipe(
-      tap((messages) => console.log(messages)),
       map((messages) => [...messages].reverse())
     ) as Observable<Message[]>;
   }
