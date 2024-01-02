@@ -1,11 +1,11 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { AuthService } from './auth.service';
+import { AuthService } from '../../../shared/data-access/auth.service';
 import { Subject, catchError, map, switchMap, EMPTY, tap, defer } from 'rxjs';
-import { Credentials } from '../model/credentials';
+import { Credentials } from '../../../shared/model/credentials';
 import { connect } from 'ngxtension/connect';
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
-import { FIRESTORE } from '../../app.config';
-import { User } from '../model/user';
+import { FIRESTORE } from '../../../app.config';
+import { User } from '../../../shared/model/user';
 
 export type RegisterStatus = 'pending' | 'creating' | 'success' | 'error';
 
@@ -13,9 +13,7 @@ interface RegisterState {
   status: RegisterStatus;
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class RegisterService {
   private authService = inject(AuthService);
   private firestore = inject(FIRESTORE);
