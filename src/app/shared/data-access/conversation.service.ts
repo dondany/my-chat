@@ -1,10 +1,12 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { FIRESTORE } from '../../app.config';
 import { Conversation } from '../model/conversation';
-import { collection, doc, query } from 'firebase/firestore';
+import { collection, doc, query, where } from 'firebase/firestore';
 import { collectionData, docData } from 'rxfire/firestore';
-import { Observable, Subject, map, switchMap } from 'rxjs';
+import { Observable, Subject, filter, map, retry, switchMap, tap } from 'rxjs';
 import { connect } from 'ngxtension/connect';
+import { AuthService, AuthUser } from './auth.service';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 interface ConversationState {
   conversations: Conversation[];
@@ -17,9 +19,15 @@ interface ConversationState {
 })
 export class ConversationService {
   private firestore = inject(FIRESTORE);
+  private authService = inject(AuthService);
+
+  private authUser$ = toObservable(this.authService.user);
 
   //sources
-  conversations$ = this.getConversations();
+  conversations$ = this.authUser$.pipe(
+    filter((user) => !!user),
+    switchMap((user) => this.getConversations(user!.uid))
+  );
   currentConversation$ = new Subject<string>();
 
   //state
@@ -30,6 +38,7 @@ export class ConversationService {
   });
 
   //selectors
+  conversations = computed(() => this.state().conversations);
   currentConversation = computed(() => this.state().currentConversation);
 
   constructor() {
@@ -46,12 +55,13 @@ export class ConversationService {
       );
   }
 
-  getConversations() {
-    const converstationCollection = query(
-      collection(this.firestore, 'conversations')
+  getConversations(userUid: string) {
+    const conversationsCollection = query(
+      collection(this.firestore, 'conversations'),
+      where('members', 'array-contains', userUid)
     );
 
-    return collectionData(converstationCollection, {
+    return collectionData(conversationsCollection, {
       idField: 'uid',
     }) as Observable<Conversation[]>;
   }
