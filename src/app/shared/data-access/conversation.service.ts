@@ -3,11 +3,12 @@ import { FIRESTORE } from '../../app.config';
 import { Conversation, ConversationDetails } from '../model/conversation';
 import { collection, doc, query, where } from 'firebase/firestore';
 import { collectionData, docData } from 'rxfire/firestore';
-import { Observable, Subject, combineLatest, filter, map, switchMap } from 'rxjs';
+import { Observable, Subject, combineLatest, filter, map, switchMap, tap } from 'rxjs';
 import { connect } from 'ngxtension/connect';
 import { AuthService } from './auth.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { UserDetails } from '../model/user';
+import { MessageService } from './message.service';
 
 interface ConversationState {
   conversations: Conversation[];
@@ -21,6 +22,7 @@ interface ConversationState {
 export class ConversationService {
   private firestore = inject(FIRESTORE);
   private authService = inject(AuthService);
+  private messageService = inject(MessageService);
 
   private authUser$ = toObservable(this.authService.user);
 
@@ -57,7 +59,8 @@ export class ConversationService {
               members: users
              }) as ConversationDetails)
           )),
-          map((currentConversation) => ({ currentConversation }))
+          tap((conversation) => this.messageService.currentConversation$.next(conversation)),
+          map((currentConversation) => ({ currentConversation })),
         )
       );
   }
