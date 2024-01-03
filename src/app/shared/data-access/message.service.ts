@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { FIRESTORE } from '../../app.config';
-import { Message } from '../model/message';
+import { Message, MessageDetails } from '../model/message';
 import { connect } from 'ngxtension/connect';
 import {
   Observable,
@@ -23,13 +23,13 @@ import {
   query,
 } from 'firebase/firestore';
 import { collectionData, docData } from 'rxfire/firestore';
-import { Conversation } from '../model/conversation';
-import { ConversationService } from './conversation.service';
+import { Conversation, ConversationDetails } from '../model/conversation';
 import { AuthService } from './auth.service';
 
 interface MessageState {
-  messages: Message[];
+  messages: MessageDetails[];
   error: string | null;
+  currentConversation: ConversationDetails | null;
 }
 
 @Injectable({
@@ -37,11 +37,10 @@ interface MessageState {
 })
 export class MessageService {
   private firestore = inject(FIRESTORE);
-  private conversationService = inject(ConversationService);
   private authService = inject(AuthService);
 
   //sources
-  currentConversation$ = new Subject<Conversation>();
+  currentConversation$ = new Subject<ConversationDetails>();
   conversation$ = new Subject<string>();
   add$ = new Subject<string>();
 
@@ -49,6 +48,7 @@ export class MessageService {
   private state = signal<MessageState>({
     messages: [],
     error: null,
+    currentConversation: null,
   });
 
   //selectors
@@ -59,8 +59,14 @@ export class MessageService {
     //reducers
     connect(this.state)
       .with(
-        this.conversationService.currentConversation$.pipe(
-          switchMap((conversationUid) => this.getMessages(conversationUid)),
+        this.currentConversation$.pipe(
+          map((currentConversation) => ({ currentConversation }))
+        )
+      )
+      .with(
+        this.currentConversation$.pipe(
+          switchMap((conversation) => this.getMessages(conversation.uid)),
+          map(messages => messages.map(message => ({ ...message, sender: this.mapMember(message.sender) }))),
           map((messages) => ({ messages }))
         )
       )
@@ -80,7 +86,7 @@ export class MessageService {
       created: Date.now().toString(),
     };
 
-    const conversationUid = this.conversationService.currentConversation()?.uid;
+    const conversationUid = this.state().currentConversation?.uid;
     const messagesCollection = collection(
       this.firestore,
       `conversations/${conversationUid}/messages`
@@ -98,5 +104,12 @@ export class MessageService {
     return collectionData(messagesCollection, { idField: 'id' }).pipe(
       map((messages) => [...messages].reverse())
     ) as Observable<Message[]>;
+  }
+
+  private mapMember(uid: string) {
+    if (!this.state() && !this.state().currentConversation) {
+      return undefined;
+    }
+    return this.state()?.currentConversation?.members?.find(member => member.uid === uid);
   }
 }
