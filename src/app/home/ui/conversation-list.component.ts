@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { ConversationService } from '../../shared/data-access/conversation.service';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Conversation } from '../../shared/model/conversation';
 
 @Component({
   standalone: true,
@@ -7,13 +7,15 @@ import { ConversationService } from '../../shared/data-access/conversation.servi
   template: `
     <h1>Conversations</h1>
     <ul>
-      @for (conversation of conversationService.conversations(); track $index) {
+      @for (conversation of conversations; track $index) {
       <li>{{ conversation.name }}</li>
-      <button (click)="conversationService.currentConversation$.next(conversation.uid)" >Open</button>
+      <button (click)="conversationEmitter.emit(conversation)" >Open</button>
       }
     </ul>
   `,
 })
 export class ConversationList {
-    conversationService = inject(ConversationService);
+  @Input({required: true}) conversations : Conversation[] = [];
+
+  @Output('conversation') conversationEmitter = new EventEmitter<Conversation>();
 }
