@@ -8,20 +8,21 @@ import { MessageDetails } from '../../../shared/model/message';
   standalone: true,
   selector: 'app-message-box',
   template: `
-    <h2>Messages</h2>
-    <ul>
-      @for(message of messages; track $index) {
-      <li>
-        {{ message.sender?.username }}
-        {{ message.created | date : 'short' }}
-        {{ message.content }}
-      </li>
-      }
-    </ul>
-    <form [formGroup]="msgForm" (ngSubmit)="onSubmit()">
-      <input formControlName="msg" type="text" />
-      <button type="submit">Send</button>
-    </form>
+    <div class="flex flex-col grow p-2">
+      <ul>
+        @for(message of messages; track $index) {
+        <li>
+          {{ message.sender?.username }}
+          {{ message.created | date : 'short' }}
+          {{ message.content }}
+        </li>
+        }
+      </ul>
+      <form [formGroup]="msgForm" (ngSubmit)="onSubmit()" class="mt-auto gap-3 flex">
+        <input formControlName="msg" type="text" class="grow p-2 rounded-2xl bg-gray-200" placeholder="Aa"/>
+        <button type="submit">Send</button>
+      </form>
+    </div>
   `,
   imports: [ReactiveFormsModule, CommonModule],
 })

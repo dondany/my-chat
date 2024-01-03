@@ -10,11 +10,17 @@ import { MessageBoxComponent } from './conversation/ui/message-box.component';
   standalone: true,
   selector: 'app-home',
   template: `
-    <app-conversation-list
-      [conversations]="conversationService.conversations()"
-      (conversation)="conversationService.currentConversation$.next($event.uid)"
-    />
-    <router-outlet></router-outlet>
+    <div class="flex h-screen w-full">
+      <app-conversation-list
+        [conversations]="conversationService.conversations()"
+        (conversation)="conversationService.currentConversation$.next($event.uid)"
+        class="w-[360px] border-r"
+      />
+      <div class="w-full h-full">
+      <router-outlet></router-outlet>
+      </div>
+      
+    </div>
   `,
   providers: [LoginService],
   imports: [CommonModule, RouterOutlet, ConversationList, MessageBoxComponent],

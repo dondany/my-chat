@@ -7,17 +7,21 @@ import { MessageService } from '../../shared/data-access/message.service';
   standalone: true,
   selector: 'app-conversation',
   template: `
-    <h1>{{ conversationService.currentConversation()?.name }}</h1>
-    <ul>
-      @for(member of conversationService.currentConversation()?.members; track
-      $index) {
-      <li>{{ member.username }}</li>
-      }
-    </ul>
-    <app-message-box
-      [messages]="messageService.messages()"
-      (message)="messageService.add$.next($event)"
-    />
+    <div class="flex flex-col h-full">
+      <header class="flex items-center gap-3 p-4 border-b">
+        <div class="w-8 h-8 rounded-full bg-gray-300"></div>
+        <div class="flex flex-col">
+          <span class="font-medium">
+            {{ conversationService.currentConversation()?.name }}
+          </span>
+        </div>
+      </header>
+      <app-message-box
+        [messages]="messageService.messages()"
+        (message)="messageService.add$.next($event)"
+        class="grow flex"
+      />
+    </div>
   `,
   imports: [MessageBoxComponent],
 })

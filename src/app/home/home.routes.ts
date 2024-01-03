@@ -9,6 +9,6 @@ export const HOME_ROUTES: Route[] = [
                 path: ':id',
                 loadComponent: () => import('./conversation/conversation.component') 
             },
-        ]
+        ],
     },
 ]
