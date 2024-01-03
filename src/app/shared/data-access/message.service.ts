@@ -76,7 +76,8 @@ export class MessageService {
   private addMessage(message: string) {
     const newMessage: Message = {
       content: message,
-      sender: this.authService.user()?.email!,
+      sender: this.authService.user()?.uid!,
+      created: Date.now().toString(),
     };
 
     const conversationUid = this.conversationService.currentConversation()?.uid;
@@ -90,7 +91,7 @@ export class MessageService {
   private getMessages(conversationUid: string) {
     const messagesCollection = query(
       collection(this.firestore, `conversations/${conversationUid}/messages`),
-        //  orderBy('created', 'desc'),
+      orderBy('created', 'desc'),
       limit(50)
     );
 

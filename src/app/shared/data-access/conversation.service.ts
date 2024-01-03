@@ -1,16 +1,17 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { FIRESTORE } from '../../app.config';
-import { Conversation } from '../model/conversation';
+import { Conversation, ConversationDetails } from '../model/conversation';
 import { collection, doc, query, where } from 'firebase/firestore';
 import { collectionData, docData } from 'rxfire/firestore';
-import { Observable, Subject, filter, map, retry, switchMap, tap } from 'rxjs';
+import { Observable, Subject, combineLatest, filter, map, retry, switchMap, tap } from 'rxjs';
 import { connect } from 'ngxtension/connect';
 import { AuthService, AuthUser } from './auth.service';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { UserDetails } from '../model/user';
 
 interface ConversationState {
   conversations: Conversation[];
-  currentConversation: Conversation | null;
+  currentConversation: ConversationDetails | null;
   error: string | null;
 }
 
@@ -50,6 +51,12 @@ export class ConversationService {
       .with(
         this.currentConversation$.pipe(
           switchMap((conversationId) => this.getConversation(conversationId)),
+          switchMap((conversation) => this.getMembers(conversation).pipe(
+            map(users =>  ({
+              ...conversation,
+              members: users
+             }) as ConversationDetails)
+          )),
           map((currentConversation) => ({ currentConversation }))
         )
       );
@@ -75,5 +82,13 @@ export class ConversationService {
     return docData(conversationDoc, {
       idField: 'uid',
     }) as Observable<Conversation>;
+  }
+
+  getMembers(conversation: Conversation) {
+    const users$ = conversation.members!.map(memberUid => {
+      const userDoc = doc(this.firestore, 'users', memberUid);
+      return docData(userDoc, {idField: 'uid'}) as Observable<UserDetails>;
+    });
+    return combineLatest(users$);
   }
 }
