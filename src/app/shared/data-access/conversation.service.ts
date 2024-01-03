@@ -3,9 +3,9 @@ import { FIRESTORE } from '../../app.config';
 import { Conversation, ConversationDetails } from '../model/conversation';
 import { collection, doc, query, where } from 'firebase/firestore';
 import { collectionData, docData } from 'rxfire/firestore';
-import { Observable, Subject, combineLatest, filter, map, retry, switchMap, tap } from 'rxjs';
+import { Observable, Subject, combineLatest, filter, map, switchMap } from 'rxjs';
 import { connect } from 'ngxtension/connect';
-import { AuthService, AuthUser } from './auth.service';
+import { AuthService } from './auth.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { UserDetails } from '../model/user';
 

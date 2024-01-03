@@ -1,19 +1,13 @@
 import { Component, inject } from '@angular/core';
-import { MessageService } from '../../shared/data-access/message.service';
+import { MessageService } from '../../../shared/data-access/message.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ConversationService } from '../../shared/data-access/conversation.service';
+import { ConversationService } from '../../../shared/data-access/conversation.service';
 
 @Component({
   standalone: true,
   selector: 'app-message-box',
   template: `
-    <h1>{{ conversationService.currentConversation()?.name }}</h1>
-    <ul>
-      @for(member of conversationService.currentConversation()?.members; track $index) {
-        <li>{{ member.username }}</li>
-      }
-    </ul>
     <h2>Messages</h2>
     <ul>
       @for(message of messageService.messages(); track $index) {
