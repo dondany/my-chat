@@ -8,18 +8,36 @@ import { MessageDetails } from '../../../shared/model/message';
   standalone: true,
   selector: 'app-message-box',
   template: `
-    <div class="flex flex-col grow p-2">
-      <ul>
+    <div class="flex flex-col grow p-2 gap-3">
+      <ul class="h-full flex flex-col justify-end">
         @for(message of messages; track $index) {
-        <li>
-          {{ message.sender?.username }}
-          {{ message.created | date : 'short' }}
-          {{ message.content }}
+        <li class="flex">
+          <div [ngClass]="{ 'ml-auto': message.isCurrentUser }" class="flex flex-col">
+            <div class="text-xs" [ngClass]="{'ml-auto': message.isCurrentUser}">
+              @if(!message.isCurrentUser) {
+              {{ message.sender?.username }},
+              } {{ message.created | date : 'shortTime' }}
+            </div>
+            <span
+              [ngClass]="{ 'bg-blue-500 text-white': message.isCurrentUser }"
+              class="p-2 bg-gray-200 rounded-xl"
+              >{{ message.content }}</span
+            >
+          </div>
         </li>
         }
       </ul>
-      <form [formGroup]="msgForm" (ngSubmit)="onSubmit()" class="mt-auto gap-3 flex">
-        <input formControlName="msg" type="text" class="grow p-2 rounded-2xl bg-gray-200" placeholder="Aa"/>
+      <form
+        [formGroup]="msgForm"
+        (ngSubmit)="onSubmit()"
+        class="mt-auto gap-3 flex"
+      >
+        <input
+          formControlName="msg"
+          type="text"
+          class="grow p-2 rounded-2xl bg-gray-200 outline-0"
+          placeholder="Aa"
+        />
         <button type="submit">Send</button>
       </form>
     </div>

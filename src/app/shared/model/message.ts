@@ -9,5 +9,6 @@ export interface Message {
 export interface MessageDetails {
     content: string;
     sender: UserDetails | undefined;
+    isCurrentUser: boolean;
     created: string;
 }

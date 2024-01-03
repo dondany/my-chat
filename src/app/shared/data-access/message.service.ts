@@ -22,8 +22,8 @@ import {
   orderBy,
   query,
 } from 'firebase/firestore';
-import { collectionData, docData } from 'rxfire/firestore';
-import { Conversation, ConversationDetails } from '../model/conversation';
+import { collectionData } from 'rxfire/firestore';
+import { ConversationDetails } from '../model/conversation';
 import { AuthService } from './auth.service';
 
 interface MessageState {
@@ -66,7 +66,13 @@ export class MessageService {
       .with(
         this.currentConversation$.pipe(
           switchMap((conversation) => this.getMessages(conversation.uid)),
-          map(messages => messages.map(message => ({ ...message, sender: this.mapMember(message.sender) }))),
+          map((messages) =>
+            messages.map((message) => ({
+              ...message,
+              sender: this.mapMember(message.sender),
+              isCurrentUser: this.isCurrentUser(message.sender),
+            }))
+          ),
           map((messages) => ({ messages }))
         )
       )
@@ -110,6 +116,12 @@ export class MessageService {
     if (!this.state() && !this.state().currentConversation) {
       return undefined;
     }
-    return this.state()?.currentConversation?.members?.find(member => member.uid === uid);
+    return this.state()?.currentConversation?.members?.find(
+      (member) => member.uid === uid
+    );
+  }
+
+  private isCurrentUser(uid: string) {
+    return this.authService.user()?.uid === uid;
   }
 }
