@@ -58,7 +58,8 @@ export class RegisterService {
 
   createUser(uid: string, username: string) {
     const newUser: User ={
-        username
+        username,
+        avatar: 'https://i.pravatar.cc/50?img=' + Math.floor(Math.random() * 49 + 1),
     };
     return defer(() => setDoc(doc(this.firestore, 'users', uid), newUser)); 
   }
