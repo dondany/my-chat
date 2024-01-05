@@ -13,3 +13,9 @@ export interface ConversationDetails {
     type?: 'PRIVATE' | 'GROUP';
     members?: UserDetails[];
 }
+
+export interface CreateConversation {
+    name: string;
+    type: 'PRIVATE' | 'GROUP';
+    members: string[];
+}

@@ -11,16 +11,25 @@ import { MessageDetails } from '../../../shared/model/message';
     <div class="flex flex-col grow p-2 gap-3">
       <ul class="h-full flex flex-col justify-end">
         @for(message of messages; track $index) {
-        <li class="flex">
-          <div [ngClass]="{ 'ml-auto': message.isCurrentUser }" class="flex flex-col">
-            <div class="text-xs" [ngClass]="{'ml-auto': message.isCurrentUser}">
+        <li class="flex gap-1 items-center">
+          @if (!message.isCurrentUser) {
+          <img class="w-8 h-8 rounded-full" [src]="message.sender?.avatar" />
+          }
+          <div
+            [ngClass]="{ 'ml-auto': message.isCurrentUser }"
+            class="flex flex-col"
+          >
+            <div
+              class="text-xs"
+              [ngClass]="{ 'ml-auto': message.isCurrentUser }"
+            >
               @if(!message.isCurrentUser) {
-              {{ message.sender?.username }},
-              } {{ message.created | date : 'shortTime' }}
+              {{ message.sender?.username }}, }
+              {{ message.created | date : 'shortTime' }}
             </div>
             <span
-              [ngClass]="{ 'bg-blue-500 text-white': message.isCurrentUser }"
-              class="p-2 bg-gray-200 rounded-xl"
+              [ngClass]="message.isCurrentUser ? 'bg-blue-500 text-white' : 'bg-gray-200'"
+              class="p-2 rounded-xl"
               >{{ message.content }}</span
             >
           </div>
