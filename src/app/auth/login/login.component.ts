@@ -1,11 +1,13 @@
 import { Component, inject } from "@angular/core";
 import { LoginService } from "./data-access/login.service";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { RouterLink } from "@angular/router";
 
 @Component({
     standalone: true,
     selector: 'app-login',
     template: `
+    <a routerLink="/auth/register">Sign up</a>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <label for="email"></label>
         <input formControlName="email" type="email" id="email">
@@ -17,7 +19,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 
     </form>
     `,
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, RouterLink],
     providers: [LoginService]
 })
 export default class LoginComponent {

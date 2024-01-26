@@ -1,11 +1,13 @@
 import { Component, Inject, inject } from "@angular/core";
 import { RegisterService } from "./data-access/register.service";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { RouterLink } from "@angular/router";
 
 @Component({
     standalone: true,
     selector: 'app-register',
     template: `
+    <a routerLink="/auth/login">Sign in</a>
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <label for="email"></label>
         <input formControlName="email" type="email" id="email">
@@ -17,7 +19,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 
     </form>
     `,
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, RouterLink],
     providers: [RegisterService]
 })
 export default class RegisterComponent {
