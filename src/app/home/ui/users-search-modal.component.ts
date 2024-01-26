@@ -1,6 +1,11 @@
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import {
   MatDialogContent,
   MatDialogRef,
@@ -37,17 +42,22 @@ import { AuthService } from '../../shared/data-access/auth.service';
         class="w-full"
       >
         <mat-form-field class="w-full">
+          <mat-label>Name</mat-label>
+          <input matInput type="text" formControlName="nameFormControl" />
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
           <mat-label>Members</mat-label>
           <mat-chip-grid #chipGrid aria-lable="Members">
             @for (user of members; track user) {
             <mat-chip-row (removed)="remove(user)" class="bg-white">
               <div class="flex justify-center items-center gap-2">
-                <img [src]="user.avatar" class="w-6 h6 rounded-full" />
-                {{ user.username }}
+                <img [src]="user.imgUrl" class="w-6 h6 rounded-full" />
+                {{ user.display }}
               </div>
               <button
                 matChipRemove
-                [attr.aria-label]="'remove ' + user.username"
+                [attr.aria-label]="'remove ' + user.display"
               >
                 <mat-icon>cancel</mat-icon>
               </button>
@@ -69,8 +79,8 @@ import { AuthService } from '../../shared/data-access/auth.service';
             @for (user of users | async; track $index) {
             <mat-option [value]="user">
               <div class="flex justify-center items-center gap-2">
-                <img [src]="user.avatar" class="w-8 h8 rounded-full" />
-                {{ user.username }}
+                <img [src]="user.imgUrl" class="w-8 h8 rounded-full" />
+                {{ user.display }}
               </div>
             </mat-option>
             }
@@ -107,8 +117,11 @@ export class UsersSearchModalComponent {
   members: UserDetails[] = [];
   users: Observable<UserDetails[]> = toObservable(this.userService.users);
 
+  nameFormControl: FormControl = new FormControl<string>('');
+
   form = new FormGroup({
     usernameFormControl: this.userService.usernameFromControl,
+    nameFormControl: this.nameFormControl,
   });
 
   @ViewChild('memberInput') memberInput!: ElementRef<HTMLInputElement>;
@@ -128,16 +141,16 @@ export class UsersSearchModalComponent {
       this.members.push(event.option.value);
     }
     this.memberInput.nativeElement.value = '';
-    this.form.reset();
+    this.userService.usernameFromControl.reset();
   }
 
   onSubmit() {
     const memberUids = this.members.map((member) => member.uid);
     const newConversation: CreateConversation = {
-      name: "new name",
+      name: this.nameFormControl.getRawValue(),
       type: this.members.length < 2 ? 'PRIVATE' : 'GROUP',
-      members: [...memberUids, this.authService.user()!.uid]
-    }
+      members: [...memberUids, this.authService.user()!.uid],
+    };
 
     this.conversationService.add$.next(newConversation);
     this.dialogRef.close();

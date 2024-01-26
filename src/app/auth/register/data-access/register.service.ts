@@ -52,7 +52,7 @@ export class RegisterService {
     //reducers
     connect(this.state)
       .with(this.userCreated$.pipe(map(() => ({ status: 'success' }))))
-      .with(this.createUser$.pipe(map(() => ({ status: 'creating' }))))
+      // .with(this.createUser$.pipe(map(() => ({ status: 'creating' }))))
       .with(this.error$.pipe(map(() => ({ status: 'error' }))));
   }
 
