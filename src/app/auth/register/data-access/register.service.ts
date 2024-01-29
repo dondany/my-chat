@@ -6,6 +6,7 @@ import { connect } from 'ngxtension/connect';
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import { FIRESTORE } from '../../../app.config';
 import { User } from '../../../shared/model/user';
+import { Router } from '@angular/router';
 
 export type RegisterStatus = 'pending' | 'creating' | 'success' | 'error';
 
@@ -17,6 +18,7 @@ interface RegisterState {
 export class RegisterService {
   private authService = inject(AuthService);
   private firestore = inject(FIRESTORE);
+  private router = inject(Router);
 
   //sources
   error$ = new Subject<any>();
@@ -28,7 +30,8 @@ export class RegisterService {
         catchError((err) => {
           this.error$.next(err);
           return EMPTY;
-        })
+        }),
+        tap(() => this.router.navigate(['home']))
       )
     ),
     switchMap((credentials) => {
@@ -52,7 +55,7 @@ export class RegisterService {
     //reducers
     connect(this.state)
       .with(this.userCreated$.pipe(map(() => ({ status: 'success' }))))
-      .with(this.createUser$.pipe(map(() => ({ status: 'creating' }))))
+      // .with(this.createUser$.pipe(map(() => ({ status: 'creating' }))))
       .with(this.error$.pipe(map(() => ({ status: 'error' }))));
   }
 

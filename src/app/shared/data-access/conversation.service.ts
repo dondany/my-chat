@@ -118,7 +118,7 @@ export class ConversationService {
   }
 
   getMembers(conversation: Conversation) {
-    const users$ = conversation.members!.map((memberUid) => {
+    const users$ = conversation.memberIds!.map((memberUid) => {
       const userDoc = doc(this.firestore, 'users', memberUid);
       return docData(userDoc, { idField: 'uid' }) as Observable<UserDetails>;
     });

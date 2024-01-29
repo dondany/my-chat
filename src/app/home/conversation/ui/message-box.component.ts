@@ -13,7 +13,7 @@ import { MessageDetails } from '../../../shared/model/message';
         @for(message of messages; track $index) {
         <li class="flex gap-1 items-center">
           @if (!message.isCurrentUser) {
-          <img class="w-8 h-8 rounded-full" [src]="message.sender?.avatar" />
+          <img class="w-8 h-8 rounded-full" [src]="message.sender?.imgUrl" />
           }
           <div
             [ngClass]="{ 'ml-auto': message.isCurrentUser }"
@@ -24,7 +24,7 @@ import { MessageDetails } from '../../../shared/model/message';
               [ngClass]="{ 'ml-auto': message.isCurrentUser }"
             >
               @if(!message.isCurrentUser) {
-              {{ message.sender?.username }}, }
+              {{ message.sender?.display }}, }
               {{ message.created | date : 'shortTime' }}
             </div>
             <span

@@ -3,6 +3,7 @@ import { AuthService } from '../../../shared/data-access/auth.service';
 import { EMPTY, Subject, catchError, map, switchMap, tap } from 'rxjs';
 import { Credentials } from '../../../shared/model/credentials';
 import { connect } from 'ngxtension/connect';
+import { Router } from '@angular/router';
 
 export type LoginStatus = 'pending' | 'authenticating' | 'success' | 'error';
 
@@ -13,6 +14,7 @@ interface LoginState {
 @Injectable()
 export class LoginService {
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   //sources
   error$ = new Subject<any>();
@@ -24,7 +26,8 @@ export class LoginService {
         catchError((err) => {
           this.error$.next(err);
           return EMPTY;
-        })
+        }),
+        tap(() => this.router.navigate(['home']))
       )
     ),
   );

@@ -4,7 +4,12 @@ export interface Conversation {
     uid: string;
     name: string;
     type?: 'PRIVATE' | 'GROUP';
-    members?: string[];
+    memberIds?: string[];
+    members?: UserDetails[];
+    created?: string;
+    updated?: string;
+    createdBy?: string;
+    lastMessage?: string;
 }
 
 export interface ConversationDetails {
