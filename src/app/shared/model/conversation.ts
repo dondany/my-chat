@@ -10,17 +10,12 @@ export interface Conversation {
     updated?: string;
     createdBy?: string;
     lastMessage?: string;
-}
-
-export interface ConversationDetails {
-    uid: string;
-    name: string;
-    type?: 'PRIVATE' | 'GROUP';
-    members?: UserDetails[];
+    imgUrls?: string[];
 }
 
 export interface CreateConversation {
     name: string;
     type: 'PRIVATE' | 'GROUP';
-    members: string[];
+    memberIds: string[];
+    members: UserDetails[];
 }

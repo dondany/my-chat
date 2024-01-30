@@ -53,11 +53,11 @@ import { AuthService } from '../../shared/data-access/auth.service';
             <mat-chip-row (removed)="remove(user)" class="bg-white">
               <div class="flex justify-center items-center gap-2">
                 <img [src]="user.imgUrl" class="w-6 h6 rounded-full" />
-                {{ user.display }}
+                {{ user.username }}
               </div>
               <button
                 matChipRemove
-                [attr.aria-label]="'remove ' + user.display"
+                [attr.aria-label]="'remove ' + user.username"
               >
                 <mat-icon>cancel</mat-icon>
               </button>
@@ -80,7 +80,7 @@ import { AuthService } from '../../shared/data-access/auth.service';
             <mat-option [value]="user">
               <div class="flex justify-center items-center gap-2">
                 <img [src]="user.imgUrl" class="w-8 h8 rounded-full" />
-                {{ user.display }}
+                {{ user.username }}
               </div>
             </mat-option>
             }
@@ -149,9 +149,11 @@ export class UsersSearchModalComponent {
     const newConversation: CreateConversation = {
       name: this.nameFormControl.getRawValue(),
       type: this.members.length < 2 ? 'PRIVATE' : 'GROUP',
-      members: [...memberUids, this.authService.user()!.uid],
+      memberIds: [...memberUids, this.authService.user()!.uid],
+      members: [...this.members, this.authService.userDetails()!],
     };
 
+    console.log('conversation', newConversation);
     this.conversationService.add$.next(newConversation);
     this.dialogRef.close();
   }

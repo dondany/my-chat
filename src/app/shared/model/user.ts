@@ -5,6 +5,7 @@ export interface User {
 
 export interface UserDetails {
     uid: string;
-    display: string;
+    username: string;
+    email: string;
     imgUrl: string;
 }

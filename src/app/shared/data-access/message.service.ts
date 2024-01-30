@@ -23,13 +23,13 @@ import {
   query,
 } from 'firebase/firestore';
 import { collectionData } from 'rxfire/firestore';
-import { ConversationDetails } from '../model/conversation';
 import { AuthService } from './auth.service';
+import { Conversation } from '../model/conversation';
 
 interface MessageState {
   messages: MessageDetails[];
   error: string | null;
-  currentConversation: ConversationDetails | null;
+  currentConversation: Conversation | null;
 }
 
 @Injectable({
@@ -40,7 +40,7 @@ export class MessageService {
   private authService = inject(AuthService);
 
   //sources
-  currentConversation$ = new Subject<ConversationDetails>();
+  currentConversation$ = new Subject<Conversation>();
   conversation$ = new Subject<string>();
   add$ = new Subject<string>();
 
@@ -66,7 +66,7 @@ export class MessageService {
       .with(
         this.currentConversation$.pipe(
           switchMap((conversation) => this.getMessages(conversation.uid)),
-          map((messages) =>
+          map((messages) => 
             messages.map((message) => ({
               ...message,
               sender: this.mapMember(message.sender),
