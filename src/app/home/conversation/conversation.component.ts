@@ -2,14 +2,15 @@ import { Component, inject } from '@angular/core';
 import { ConversationService } from '../../shared/data-access/conversation.service';
 import { MessageBoxComponent } from './ui/message-box.component';
 import { MessageService } from '../../shared/data-access/message.service';
+import { AvatarComponent } from "./ui/avatar-component";
 
 @Component({
-  standalone: true,
-  selector: 'app-conversation',
-  template: `
+    standalone: true,
+    selector: 'app-conversation',
+    template: `
     <div class="flex flex-col h-full">
       <header class="flex items-center gap-3 p-4 border-b">
-        <div class="w-8 h-8 rounded-full bg-gray-300"></div>
+        <app-avatar [imgUrls]="conversationService.currentConversation()?.imgUrls!"></app-avatar>
         <div class="flex flex-col">
           <span class="font-medium">
             {{ conversationService.currentConversation()?.name }}
@@ -23,7 +24,7 @@ import { MessageService } from '../../shared/data-access/message.service';
       />
     </div>
   `,
-  imports: [MessageBoxComponent],
+    imports: [MessageBoxComponent, AvatarComponent]
 })
 export default class ConversationComponent {
   conversationService = inject(ConversationService);

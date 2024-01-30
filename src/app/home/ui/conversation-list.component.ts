@@ -3,11 +3,12 @@ import { Conversation } from '../../shared/model/conversation';
 import { MatIconModule } from '@angular/material/icon';
 import { UsersSearchModalComponent } from './users-search-modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { AvatarComponent } from "../conversation/ui/avatar-component";
 
 @Component({
-  standalone: true,
-  selector: 'app-conversation-list',
-  template: `
+    standalone: true,
+    selector: 'app-conversation-list',
+    template: `
     <div class="p-6 flex justify-between items-center fill-none">
       <span class="font-semibold text-2xl">Chats</span>
       <div
@@ -24,7 +25,7 @@ import { MatDialog } from '@angular/material/dialog';
         (click)="conversationEmitter.emit(conversation)"
         class="flex gap-3 items-center p-4 rounded cursor-pointer hover:bg-gray-100"
       >
-        <div class="w-10 h-10 rounded-full bg-gray-300"></div>
+        <app-avatar [imgUrls]="conversation.imgUrls!"></app-avatar>
         <div class="flex flex-col">
           <span class="font-medium">{{ conversation.name }}</span>
           <span>Ostatnia wiadomosc...</span>
@@ -33,7 +34,7 @@ import { MatDialog } from '@angular/material/dialog';
       }
     </ul>
   `,
-  imports: [MatIconModule],
+    imports: [MatIconModule, AvatarComponent]
 })
 export class ConversationList {
   @Input({ required: true }) conversations: Conversation[] = [];

@@ -1,9 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { FIRESTORE } from '../../app.config';
-import {
-  Conversation,
-  CreateConversation,
-} from '../model/conversation';
+import { Conversation, CreateConversation } from '../model/conversation';
 import { addDoc, collection, doc, query, where } from 'firebase/firestore';
 import { collectionData, docData } from 'rxfire/firestore';
 import {
@@ -65,11 +62,25 @@ export class ConversationService {
     //reducers
     connect(this.state)
       .with(
-        this.conversations$.pipe(map((conversations) => ({ conversations })))
+        this.conversations$.pipe(
+          map((conversations) => {
+            return conversations.map((conversation) => ({
+              ...conversation,
+              imgUrls: this.getImgUrls(conversation),
+              name: this.getName(conversation),
+            }));
+          }),
+          map((conversations) => ({ conversations }))
+        )
       )
       .with(
         this.currentConversation$.pipe(
           switchMap((conversationId) => this.getConversation(conversationId)),
+          map((conversation) => ({
+            ...conversation,
+            imgUrls: this.getImgUrls(conversation),
+            name: this.getName(conversation),
+          })),
           tap((conversation) =>
             this.messageService.currentConversation$.next(conversation)
           ),
@@ -110,5 +121,30 @@ export class ConversationService {
   createConversation(conversation: CreateConversation) {
     const conversationCollection = collection(this.firestore, 'conversations');
     return defer(() => addDoc(conversationCollection, conversation));
+  }
+
+  getImgUrls(conversation: Conversation) {
+    return conversation.members
+      ?.filter((m) => m.uid !== this.authService.user()?.uid)
+      .map((m) => m.imgUrl)
+      .slice(0, 2);
+  }
+
+  getName(conversation: Conversation) {
+    let name = conversation.members
+      ?.filter((m) => m.uid !== this.authService.user()?.uid)
+      .map((m) => m.username)
+      .slice(0, 2)
+      .join(', ');
+
+    if (!name) {
+      return 'Unknown conversation';
+    }
+
+    if (conversation.members?.length! > 2) {
+      name += '...';
+    }
+
+    return name;
   }
 }

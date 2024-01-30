@@ -10,6 +10,7 @@ export interface Conversation {
     updated?: string;
     createdBy?: string;
     lastMessage?: string;
+    imgUrls?: string[];
 }
 
 export interface CreateConversation {
