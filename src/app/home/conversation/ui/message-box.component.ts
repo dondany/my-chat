@@ -24,7 +24,7 @@ import { MessageDetails } from '../../../shared/model/message';
               [ngClass]="{ 'ml-auto': message.isCurrentUser }"
             >
               @if(!message.isCurrentUser) {
-              {{ message.sender?.display }}, }
+              {{ message.sender?.username }}, }
               {{ message.created | date : 'shortTime' }}
             </div>
             <span

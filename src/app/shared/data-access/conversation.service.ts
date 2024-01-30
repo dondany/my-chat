@@ -2,7 +2,6 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { FIRESTORE } from '../../app.config';
 import {
   Conversation,
-  ConversationDetails,
   CreateConversation,
 } from '../model/conversation';
 import { addDoc, collection, doc, query, where } from 'firebase/firestore';
@@ -29,7 +28,7 @@ import { MessageService } from './message.service';
 
 interface ConversationState {
   conversations: Conversation[];
-  currentConversation: ConversationDetails | null;
+  currentConversation: Conversation | null;
   error: string | null;
 }
 
@@ -71,34 +70,25 @@ export class ConversationService {
       .with(
         this.currentConversation$.pipe(
           switchMap((conversationId) => this.getConversation(conversationId)),
-          switchMap((conversation) =>
-            this.getMembers(conversation).pipe(
-              map(
-                (users) =>
-                  ({
-                    ...conversation,
-                    members: users,
-                  } as ConversationDetails)
-              )
-            )
-          ),
           tap((conversation) =>
             this.messageService.currentConversation$.next(conversation)
           ),
           map((currentConversation) => ({ currentConversation }))
         )
       )
-      .with(this.add$.pipe(
-        exhaustMap((conversation) => this.createConversation(conversation)),
-        ignoreElements(),
-        catchError((error) => of({ error }))
-      ));
+      .with(
+        this.add$.pipe(
+          exhaustMap((conversation) => this.createConversation(conversation)),
+          ignoreElements(),
+          catchError((error) => of({ error }))
+        )
+      );
   }
 
   getConversations(userUid: string) {
     const conversationsCollection = query(
       collection(this.firestore, 'conversations'),
-      where('members', 'array-contains', userUid)
+      where('memberIds', 'array-contains', userUid)
     );
 
     return collectionData(conversationsCollection, {
@@ -115,14 +105,6 @@ export class ConversationService {
     return docData(conversationDoc, {
       idField: 'uid',
     }) as Observable<Conversation>;
-  }
-
-  getMembers(conversation: Conversation) {
-    const users$ = conversation.memberIds!.map((memberUid) => {
-      const userDoc = doc(this.firestore, 'users', memberUid);
-      return docData(userDoc, { idField: 'uid' }) as Observable<UserDetails>;
-    });
-    return combineLatest(users$);
   }
 
   createConversation(conversation: CreateConversation) {

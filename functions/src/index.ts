@@ -24,13 +24,17 @@ admin.initializeApp();
 export const userCreated = functions.auth.user().onCreate(async (user) => {
   const uid = user.uid;
   const email = user.email;
+  const username = email?.substring(0, email.indexOf('@'));
+  const imgUrl = 'https://i.pravatar.cc/50?img=' + Math.floor(Math.random() * 49 + 1);
 
   const userRef = admin.firestore().collection('users').doc(uid);
 
   try {
     await userRef.set({
       uid: uid,
-      email: email,
+      email,
+      username,
+      imgUrl,
     });
   } catch (error) {
     console.error('Error creating document:', error);

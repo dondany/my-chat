@@ -33,14 +33,7 @@ export class RegisterService {
         }),
         tap(() => this.router.navigate(['home']))
       )
-    ),
-    switchMap((credentials) => {
-        const user = credentials.user;
-        const uid = user.uid!;
-        const username = user.email!;
-
-        return this.createUser(uid, username);
-    })
+    )
   );
 
   //state
@@ -59,11 +52,4 @@ export class RegisterService {
       .with(this.error$.pipe(map(() => ({ status: 'error' }))));
   }
 
-  createUser(uid: string, username: string) {
-    const newUser: User ={
-        username,
-        avatar: 'https://i.pravatar.cc/50?img=' + Math.floor(Math.random() * 49 + 1),
-    };
-    return defer(() => setDoc(doc(this.firestore, 'users', uid), newUser)); 
-  }
 }
