@@ -152,8 +152,6 @@ export class UsersSearchModalComponent {
       memberIds: [...memberUids, this.authService.user()!.uid],
       members: [...this.members, this.authService.userDetails()!],
     };
-
-    console.log('conversation', newConversation);
     this.conversationService.add$.next(newConversation);
     this.dialogRef.close();
   }
