@@ -9,7 +9,7 @@ import { AvatarComponent } from "./ui/avatar-component";
     selector: 'app-conversation',
     template: `
     <div class="flex flex-col h-full">
-      <header class="flex items-center gap-3 p-4 border-b">
+      <header class="flex items-center gap-3 p-3 border-b">
         <app-avatar [imgUrls]="conversationService.currentConversation()?.imgUrls!"></app-avatar>
         <div class="flex flex-col">
           <span class="font-medium">

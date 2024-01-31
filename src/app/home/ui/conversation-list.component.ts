@@ -3,15 +3,15 @@ import { Conversation } from '../../shared/model/conversation';
 import { MatIconModule } from '@angular/material/icon';
 import { UsersSearchModalComponent } from './users-search-modal.component';
 import { MatDialog } from '@angular/material/dialog';
-import { AvatarComponent } from "../conversation/ui/avatar-component";
+import { AvatarComponent } from '../conversation/ui/avatar-component';
 import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
 
 @Component({
-    standalone: true,
-    selector: 'app-conversation-list',
-    template: `
-    <div class="p-6 flex justify-between items-center fill-none">
-      <span class="font-semibold text-2xl">Chats</span>
+  standalone: true,
+  selector: 'app-conversation-list',
+  template: `
+    <div class="px-6 py-4 flex justify-between items-center fill-none border-b">
+      <span class="text-3xl text-indigo-600 font-['Pacifico']">Chats</span>
       <div
         (click)="openDialog()"
         class="flex justify-center items-center p-2 rounded-full cursor-pointer hover:bg-gray-200"
@@ -24,18 +24,18 @@ import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
       @for (conversation of conversations; track $index) {
       <li
         (click)="conversationEmitter.emit(conversation)"
-        class="flex gap-3 items-center p-4 rounded cursor-pointer hover:bg-gray-100"
+        class="flex gap-3 items-center px-4 py-2 rounded cursor-pointer hover:bg-gray-100"
       >
         <app-avatar [imgUrls]="conversation.imgUrls!"></app-avatar>
         <div class="flex flex-col">
-          <span class="font-medium">{{ conversation.name }}</span>
-          <span>{{ conversation.latestMessage | truncate:25}}</span>
+          <span class="text-sm font-medium">{{ conversation.name }}</span>
+          <span class="text-gray-500 text-xs">{{ conversation.latestMessage | truncate : 25 }}</span>
         </div>
       </li>
       }
     </ul>
   `,
-    imports: [MatIconModule, AvatarComponent, TruncatePipe]
+  imports: [MatIconModule, AvatarComponent, TruncatePipe],
 })
 export class ConversationList {
   @Input({ required: true }) conversations: Conversation[] = [];
