@@ -3,7 +3,7 @@ import { Conversation } from '../../shared/model/conversation';
 import { MatIconModule } from '@angular/material/icon';
 import { UsersSearchModalComponent } from './users-search-modal.component';
 import { MatDialog } from '@angular/material/dialog';
-import { AvatarComponent } from '../conversation/ui/avatar-component';
+import { AvatarComponent } from '../../shared/ui/avatar-component';
 import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
 
 @Component({

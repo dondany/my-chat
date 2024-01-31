@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ConversationService } from '../../shared/data-access/conversation.service';
 import { MessageBoxComponent } from './ui/message-box.component';
 import { MessageService } from '../../shared/data-access/message.service';
-import { AvatarComponent } from "./ui/avatar-component";
+import { AvatarComponent } from "../../shared/ui/avatar-component";
 
 @Component({
     standalone: true,
