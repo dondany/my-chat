@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { UsersSearchModalComponent } from './users-search-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AvatarComponent } from "../conversation/ui/avatar-component";
+import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
 
 @Component({
     standalone: true,
@@ -28,13 +29,13 @@ import { AvatarComponent } from "../conversation/ui/avatar-component";
         <app-avatar [imgUrls]="conversation.imgUrls!"></app-avatar>
         <div class="flex flex-col">
           <span class="font-medium">{{ conversation.name }}</span>
-          <span>Ostatnia wiadomosc...</span>
+          <span>{{ conversation.latestMessage | truncate:25}}</span>
         </div>
       </li>
       }
     </ul>
   `,
-    imports: [MatIconModule, AvatarComponent]
+    imports: [MatIconModule, AvatarComponent, TruncatePipe]
 })
 export class ConversationList {
   @Input({ required: true }) conversations: Conversation[] = [];
