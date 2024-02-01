@@ -22,7 +22,6 @@ import { MatIconModule } from '@angular/material/icon';
           "
         />
         <div class="mt-auto p-6">
-          
           <button (click)="authService.logout()" class="flex gap-1 items-center px-2 py-1 rounded bg-indigo-400 text-white hover:bg-indigo-500">
             <!-- <app-avatar [imgUrls]="[]"></app-avatar> -->
             <mat-icon>logout</mat-icon>

@@ -5,13 +5,14 @@ import { UsersSearchModalComponent } from './users-search-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AvatarComponent } from '../../shared/ui/avatar-component';
 import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
+import { RouterModule } from '@angular/router';
 
 @Component({
   standalone: true,
   selector: 'app-conversation-list',
   template: `
     <div class="px-6 py-4 flex justify-between items-center fill-none border-b">
-      <span class="text-3xl text-indigo-600 font-['Pacifico']">Chats</span>
+      <span class="text-3xl text-indigo-600 font-['Pacifico'] cursor-pointer" routerLink="/home">Chats</span>
       <div
         (click)="openDialog()"
         class="flex justify-center items-center p-2 rounded-full cursor-pointer hover:bg-gray-200"
@@ -35,7 +36,7 @@ import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
       }
     </ul>
   `,
-  imports: [MatIconModule, AvatarComponent, TruncatePipe],
+  imports: [MatIconModule, AvatarComponent, TruncatePipe, RouterModule],
 })
 export class ConversationList {
   @Input({ required: true }) conversations: Conversation[] = [];
