@@ -3,6 +3,7 @@ import { MessageService } from '../../../shared/data-access/message.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MessageDetails } from '../../../shared/model/message';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   standalone: true,
@@ -28,7 +29,7 @@ import { MessageDetails } from '../../../shared/model/message';
               {{ message.created | date : 'shortTime' }}
             </div>
             <span
-              [ngClass]="message.isCurrentUser ? 'bg-blue-500 text-white' : 'bg-gray-200'"
+              [ngClass]="message.isCurrentUser ? 'bg-indigo-500 text-white' : 'bg-gray-200'"
               class="p-2 rounded-xl"
               >{{ message.content }}</span
             >
@@ -39,7 +40,7 @@ import { MessageDetails } from '../../../shared/model/message';
       <form
         [formGroup]="msgForm"
         (ngSubmit)="onSubmit()"
-        class="mt-auto gap-3 flex"
+        class="mt-auto gap-3 px-2 flex items-center"
       >
         <input
           formControlName="msg"
@@ -47,11 +48,13 @@ import { MessageDetails } from '../../../shared/model/message';
           class="grow p-2 rounded-2xl bg-gray-200 outline-0"
           placeholder="Aa"
         />
-        <button type="submit">Send</button>
+        <button type="submit">
+          <mat-icon class="text-indigo-600 scale-90">send</mat-icon>
+        </button>
       </form>
     </div>
   `,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, MatIconModule],
 })
 export class MessageBoxComponent {
   @Input({ required: true }) messages: MessageDetails[] = [];

@@ -86,4 +86,5 @@ export class AuthService {
 
     return docData(user, { idField: 'uid' }) as Observable<UserDetails>;
   }
+
 }

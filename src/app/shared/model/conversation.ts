@@ -9,7 +9,7 @@ export interface Conversation {
     created?: string;
     updated?: string;
     createdBy?: string;
-    lastMessage?: string;
+    latestMessage?: string;
     imgUrls?: string[];
 }
 
