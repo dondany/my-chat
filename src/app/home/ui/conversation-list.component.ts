@@ -11,7 +11,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   selector: 'app-conversation-list',
   template: `
-    <div class="px-6 py-4 flex justify-between items-center fill-none border-b">
+    <div class="px-6 py-4 h-14 flex justify-between items-center fill-none border-b">
       <span class="text-3xl text-indigo-600 font-['Pacifico'] cursor-pointer" routerLink="/home">Chats</span>
       <div
         (click)="openDialog()"

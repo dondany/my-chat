@@ -20,7 +20,7 @@ import {
   template: `
     <div class="flex flex h-full">
       <div class="flex flex-col w-full">
-        <header class="flex items-center gap-3 p-3 border-b">
+        <header class="flex items-center gap-3 p-3 border-b h-14">
           <app-avatar
             [imgUrls]="conversationService.currentConversation()?.imgUrls!"
           ></app-avatar>
