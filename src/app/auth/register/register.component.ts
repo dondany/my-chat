@@ -8,7 +8,7 @@ import { MatIconModule } from "@angular/material/icon";
     standalone: true,
     selector: 'app-register',
     template: `
-    <div class="h-screen flex flex-col items-center justify-center bg-violet-50">
+    <div class="h-screen flex flex-col items-center justify-center bg-indigo-50">
       <div class="bg-white p-10 rounded flex flex-col gap-6">
         <div class="flex justify-center">
             <span class="text-3xl text-indigo-600 font-['Pacifico']">Chats</span>

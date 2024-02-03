@@ -1,7 +1,14 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { FIRESTORE } from '../../app.config';
 import { Conversation, CreateConversation } from '../model/conversation';
-import { addDoc, collection, doc, query, where } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  query,
+  where,
+  updateDoc,
+} from 'firebase/firestore';
 import { collectionData, docData } from 'rxfire/firestore';
 import {
   Observable,
@@ -46,6 +53,7 @@ export class ConversationService {
   );
   currentConversation$ = new Subject<string>();
   add$ = new Subject<CreateConversation>();
+  update$ = new Subject<Conversation>();
 
   //state
   private state = signal<ConversationState>({
@@ -90,6 +98,13 @@ export class ConversationService {
       .with(
         this.add$.pipe(
           exhaustMap((conversation) => this.createConversation(conversation)),
+          ignoreElements(),
+          catchError((error) => of({ error }))
+        )
+      )
+      .with(
+        this.update$.pipe(
+          exhaustMap((conversation) => this.updateConversation(conversation)),
           ignoreElements(),
           catchError((error) => of({ error }))
         )
@@ -146,5 +161,18 @@ export class ConversationService {
     }
 
     return name;
+  }
+
+  updateConversation(conversation: Conversation) {
+    const conversationDoc = doc(
+      this.firestore,
+      `conversations/${conversation.uid}`
+    );
+    return defer(() =>
+      updateDoc(conversationDoc, {
+        memberIds: conversation.memberIds,
+        members: conversation.members,
+      })
+    );
   }
 }
