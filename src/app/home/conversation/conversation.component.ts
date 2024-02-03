@@ -13,6 +13,7 @@ import {
   animate,
   transition,
 } from '@angular/animations';
+import { Conversation } from '../../shared/model/conversation';
 
 @Component({
   standalone: true,
@@ -29,7 +30,8 @@ import {
               {{ conversationService.currentConversation()?.name }}
             </span>
           </div>
-          <button (click)="showSettings = !showSettings"
+          <button
+            (click)="showSettings = !showSettings"
             class="ml-auto flex items-center justify-center p-1 rounded-full cursor-pointer hover:bg-gray-200"
           >
             <mat-icon class="material-icons-outlined font-thin scale-75"
@@ -47,32 +49,22 @@ import {
       <app-conversation-settings
         [conversation]="conversationService.currentConversation()!"
         [@inOutAnimation]
+        (removeMember)="removeMember($event)"
       ></app-conversation-settings>
       }
     </div>
   `,
   animations: [
-    trigger(
-      'inOutAnimation', 
-      [
-        transition(
-          ':enter', 
-          [
-            style({ width: 0}),
-            animate('200ms linear', 
-                    style({ width: '300px' }))
-          ]
-        ),
-        transition(
-          ':leave', 
-          [
-            style({ width: '300px' }),
-            animate('200ms linear', 
-                    style({ width: 0 }))
-          ]
-        )
-      ]
-    )
+    trigger('inOutAnimation', [
+      transition(':enter', [
+        style({ width: 0 }),
+        animate('200ms linear', style({ width: '300px' })),
+      ]),
+      transition(':leave', [
+        style({ width: '300px' }),
+        animate('200ms linear', style({ width: 0 })),
+      ]),
+    ]),
   ],
   imports: [
     MessageBoxComponent,
@@ -86,4 +78,18 @@ export default class ConversationComponent {
   messageService = inject(MessageService);
 
   showSettings: boolean = false;
+
+  removeMember(event: string) {
+    let conversation = {
+      ...this.conversationService.currentConversation(),
+    } as Conversation;
+    conversation.memberIds = conversation.memberIds?.filter(
+      (id) => id !== event
+    );
+    conversation.members = conversation.members?.filter(
+      (member) => member.uid !== event
+    );
+
+    this.conversationService.update$.next(conversation);
+  }
 }

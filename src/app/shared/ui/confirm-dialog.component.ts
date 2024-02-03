@@ -16,13 +16,20 @@ import { MatInputModule } from '@angular/material/input';
   standalone: true,
   selector: 'app-confirm-dialog',
   template: `
-    <h2 mat-dialog-title>{{ title }}</h2>
+    <h2 mat-dialog-title>{{ data.title ? data.title : title }}</h2>
     <mat-dialog-content>
-      {{ message }}
+      {{ data.message? data.message : message }}
     </mat-dialog-content>
-    <mat-dialog-actions>
-      <button mat-button mat-dialog-close cdkFocusInitial>Cancel</button>
-      <button mat-button mat-dialog-close (click)="onYes()">
+    <mat-dialog-actions class="flex">
+      <button mat-stroked-button mat-dialog-close cdkFocusInitial color="warn" class="ml-auto">
+        Cancel
+      </button>
+      <button
+        mat-raised-button
+        mat-dialog-close
+        (click)="onYes()"
+        color="primary"
+      >
         Yes
       </button>
     </mat-dialog-actions>
@@ -42,11 +49,12 @@ export class ConfirmDialogComponent {
   title: string = 'Warning';
   message: string = 'Are you sure?';
 
-  constructor(public dialogRef: MatDialogRef<ConfirmDialogComponent>) {
-
-  }
+  constructor(
+    public dialogRef: MatDialogRef<ConfirmDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string }
+  ) {}
 
   onYes() {
-    this.dialogRef.close({data: true})
+    this.dialogRef.close({ data: true });
   }
 }
