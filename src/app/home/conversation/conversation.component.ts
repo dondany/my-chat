@@ -14,6 +14,7 @@ import {
   transition,
 } from '@angular/animations';
 import { Conversation } from '../../shared/model/conversation';
+import { AuthService } from '../../shared/data-access/auth.service';
 
 @Component({
   standalone: true,
@@ -48,6 +49,7 @@ import { Conversation } from '../../shared/model/conversation';
       @if (showSettings) {
       <app-conversation-settings
         [conversation]="conversationService.currentConversation()!"
+        [admin]="isAdmin()"
         [@inOutAnimation]
         (removeMember)="removeMember($event)"
       ></app-conversation-settings>
@@ -76,6 +78,7 @@ import { Conversation } from '../../shared/model/conversation';
 export default class ConversationComponent {
   conversationService = inject(ConversationService);
   messageService = inject(MessageService);
+  authService = inject(AuthService);
 
   showSettings: boolean = false;
 
@@ -91,5 +94,14 @@ export default class ConversationComponent {
     );
 
     this.conversationService.update$.next(conversation);
+  }
+
+  isAdmin(): boolean {
+    return this.conversationService
+      .currentConversation()
+      ?.members?.filter((m) => m.uid === this.authService.user()?.uid)
+      .find((m) => m.admin)
+      ? true
+      : false;
   }
 }
