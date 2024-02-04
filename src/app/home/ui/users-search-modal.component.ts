@@ -15,7 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { UserService } from '../../shared/data-access/user.service';
 import { MatChipsModule } from '@angular/material/chips';
-import { UserDetails } from '../../shared/model/user';
+import { Member, UserDetails } from '../../shared/model/user';
 import { MatIconModule } from '@angular/material/icon';
 import {
   MatAutocompleteModule,
@@ -150,7 +150,8 @@ export class UsersSearchModalComponent {
       name: this.nameFormControl.getRawValue(),
       type: this.members.length < 2 ? 'PRIVATE' : 'GROUP',
       memberIds: [...memberUids, this.authService.user()!.uid],
-      members: [...this.members, this.authService.userDetails()!],
+
+      members: [...this.members, { ...this.authService.userDetails()!, admin: true}],
     };
     this.conversationService.add$.next(newConversation);
     this.dialogRef.close();

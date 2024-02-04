@@ -22,10 +22,24 @@ import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog.compon
         @for(member of conversation.members; track member.uid) {
         <li class="p-2 w-full rounded flex gap-3 items-center">
           <app-avatar [imgUrls]="[member.imgUrl]" size="s"></app-avatar>
-          <span>{{ member.username }}</span>
-          <button class="ml-auto flex items-center justify-center p-1 rounded-full cursor-pointer hover:bg-gray-200" (click)="openRemoveMemberConfirmDialog(); memberToBeRemoved = member.uid">
-            <mat-icon class="material-icons-outlined font-thin scale-75">person_remove</mat-icon>
+          <div class="flex flex-col">
+            <span>{{ member.username }}</span>
+            @if(member.admin) {
+            <span class="text-xs text-gray-400">Administrator</span>
+            }
+          </div>
+          @if (admin) {
+          <button
+            class="ml-auto flex items-center justify-center p-1 rounded-full cursor-pointer hover:bg-gray-200"
+            (click)="
+              openRemoveMemberConfirmDialog(); memberToBeRemoved = member.uid
+            "
+          >
+            <mat-icon class="material-icons-outlined font-thin scale-75"
+              >person_remove</mat-icon
+            >
           </button>
+          }
         </li>
         }
       </ul>
@@ -35,6 +49,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog.compon
 })
 export class ConversationSettingsComponent {
   @Input({ required: true }) conversation!: Conversation;
+  @Input({ required: true }) admin!: boolean;
   @Output() removeMember: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(public dialog: MatDialog) {}
@@ -48,10 +63,10 @@ export class ConversationSettingsComponent {
       exitAnimationDuration: 120,
       data: {
         message: 'Are You sure You want to remove the member?',
-      }
+      },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (!result.data) {
         return;
       }
@@ -59,6 +74,6 @@ export class ConversationSettingsComponent {
         this.removeMember.emit(this.memberToBeRemoved);
         this.memberToBeRemoved = undefined;
       }
-    })
+    });
   }
 }

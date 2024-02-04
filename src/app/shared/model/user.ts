@@ -9,3 +9,11 @@ export interface UserDetails {
     email: string;
     imgUrl: string;
 }
+
+export interface Member {
+    uid: string;
+    username: string;
+    email: string;
+    imgUrl: string;
+    admin?: boolean;
+}
