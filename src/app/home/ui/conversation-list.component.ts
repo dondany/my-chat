@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { Conversation } from '../../shared/model/conversation';
 import { MatIconModule } from '@angular/material/icon';
-import { UsersSearchModalComponent } from './users-search-modal.component';
+import { NewConversationDialogComponent } from './new-conversation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AvatarComponent } from '../../shared/ui/avatar-component';
 import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
@@ -15,7 +15,7 @@ import { RouterModule } from '@angular/router';
       <span class="text-3xl text-indigo-600 font-['Pacifico'] cursor-pointer" routerLink="/home">Chats</span>
       <div
         (click)="openDialog()"
-        class="flex justify-center items-center p-2 rounded-full cursor-pointer hover:bg-gray-200"
+        class="flex justify-center items-center p-2 rounded-full cursor-pointer hover:bg-gray-100"
       >
         <mat-icon class="material-symbols-outlined">add</mat-icon>
       </div>
@@ -47,7 +47,7 @@ export class ConversationList {
   constructor(public dialog: MatDialog) {}
 
   openDialog(): void {
-    const dialogRef = this.dialog.open(UsersSearchModalComponent, {});
+    const dialogRef = this.dialog.open(NewConversationDialogComponent, {});
 
     // dialogRef.afterClosed().subscribe((result) => {
     // });
