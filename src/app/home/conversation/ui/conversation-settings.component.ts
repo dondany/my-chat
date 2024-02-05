@@ -43,6 +43,18 @@ import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog.compon
         </li>
         }
       </ul>
+      <div class="w-full flex px-4">
+        <div
+          class="w-full flex items-center gap-2 p-2 rounded hover:bg-gray-100 cursor-pointer"
+        >
+          <div
+            class="flex justify-center items-center p-1 rounded-full cursor-pointer bg-gray-200"
+          >
+            <mat-icon class="material-symbols-outlined">add</mat-icon>
+          </div>
+          <span>Add member</span>
+        </div>
+      </div>
     </div>
   `,
   imports: [AvatarComponent, MatIconModule],

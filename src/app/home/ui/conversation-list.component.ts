@@ -15,7 +15,7 @@ import { RouterModule } from '@angular/router';
       <span class="text-3xl text-indigo-600 font-['Pacifico'] cursor-pointer" routerLink="/home">Chats</span>
       <div
         (click)="openDialog()"
-        class="flex justify-center items-center p-2 rounded-full cursor-pointer hover:bg-gray-200"
+        class="flex justify-center items-center p-2 rounded-full cursor-pointer hover:bg-gray-100"
       >
         <mat-icon class="material-symbols-outlined">add</mat-icon>
       </div>
