@@ -4,6 +4,7 @@ import { AvatarComponent } from '../../../shared/ui/avatar-component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog.component';
+import { AddMembersDialogComponent } from './add-members-dialog.component';
 
 @Component({
   standalone: true,
@@ -44,7 +45,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog.compon
         }
       </ul>
       <div class="w-full flex px-4">
-        <div
+        <div (click)="openAddMembersDialog()"
           class="w-full flex items-center gap-2 p-2 rounded hover:bg-gray-100 cursor-pointer"
         >
           <div
@@ -52,7 +53,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog.compon
           >
             <mat-icon class="material-symbols-outlined">add</mat-icon>
           </div>
-          <span>Add member</span>
+          <span>Add members</span>
         </div>
       </div>
     </div>
@@ -67,6 +68,13 @@ export class ConversationSettingsComponent {
   constructor(public dialog: MatDialog) {}
 
   memberToBeRemoved: string | undefined;
+
+  openAddMembersDialog() {
+    const dialogRef = this.dialog.open(AddMembersDialogComponent, {
+      enterAnimationDuration: 120,
+      exitAnimationDuration: 120,
+    });
+  }
 
   openRemoveMemberConfirmDialog() {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
