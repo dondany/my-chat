@@ -31,7 +31,7 @@ import { AuthService } from '../../shared/data-access/auth.service';
 
 @Component({
   standalone: true,
-  selector: 'app-users-search-modal',
+  selector: 'app-new-conversation-dialog',
   template: `
     <div class="w-[640px]">
       <h1 mat-dialog-title>Create new conversation</h1>
@@ -108,7 +108,7 @@ import { AuthService } from '../../shared/data-access/auth.service';
     MatButtonModule,
   ],
 })
-export class UsersSearchModalComponent {
+export class NewConversationDialogComponent {
   userService = inject(UserService);
   conversationService = inject(ConversationService);
   authService = inject(AuthService);
@@ -126,7 +126,7 @@ export class UsersSearchModalComponent {
 
   @ViewChild('memberInput') memberInput!: ElementRef<HTMLInputElement>;
 
-  constructor(public dialogRef: MatDialogRef<UsersSearchModalComponent>) {}
+  constructor(public dialogRef: MatDialogRef<NewConversationDialogComponent>) {}
 
   remove(member: UserDetails) {
     const index = this.members.indexOf(member);
@@ -151,7 +151,10 @@ export class UsersSearchModalComponent {
       type: this.members.length < 2 ? 'PRIVATE' : 'GROUP',
       memberIds: [...memberUids, this.authService.user()!.uid],
 
-      members: [...this.members, { ...this.authService.userDetails()!, admin: true}],
+      members: [
+        ...this.members,
+        { ...this.authService.userDetails()!, admin: true },
+      ],
     };
     this.conversationService.add$.next(newConversation);
     this.dialogRef.close();
