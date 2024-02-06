@@ -52,6 +52,7 @@ import { AuthService } from '../../shared/data-access/auth.service';
         [admin]="isAdmin()"
         [@inOutAnimation]
         (removeMember)="removeMember($event)"
+        (toggleAdmin)="grantAdmin($event)"
       ></app-conversation-settings>
       }
     </div>
@@ -103,5 +104,16 @@ export default class ConversationComponent {
       .find((m) => m.admin)
       ? true
       : false;
+  }
+
+  grantAdmin(event: string) {
+    let conversation = {
+      ...this.conversationService.currentConversation(),
+    } as Conversation;
+    const member = conversation.members?.find(m => m.uid == event);
+    if (member) {
+      member.admin = !member.admin;
+    }
+    this.conversationService.update$.next(conversation);
   }
 }
