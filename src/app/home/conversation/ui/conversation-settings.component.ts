@@ -5,6 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog.component';
 import { AddMembersDialogComponent } from './add-members-dialog.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { Member } from '../../../shared/model/user';
 
 @Component({
   standalone: true,
@@ -32,20 +34,43 @@ import { AddMembersDialogComponent } from './add-members-dialog.component';
           @if (admin) {
           <button
             class="ml-auto flex items-center justify-center p-1 rounded-full cursor-pointer hover:bg-gray-200"
-            (click)="
-              openRemoveMemberConfirmDialog(); memberToBeRemoved = member.uid
-            "
+            [matMenuTriggerFor]="menu"
           >
             <mat-icon class="material-icons-outlined font-thin scale-75"
-              >person_remove</mat-icon
+              >more_horiz</mat-icon
             >
           </button>
+          <mat-menu #menu="matMenu">
+            <button
+              mat-menu-item
+              (click)="openRemoveMemberConfirmDialog(member.uid)"
+            >
+              <mat-icon class="material-icons-outlined font-thin scale-75"
+                >person_remove</mat-icon
+              >
+              <span>Remove member</span>
+            </button>
+            @if (admin) {
+            <button
+              mat-menu-item
+              (click)="this.toggleAdmin.emit(member.uid)"
+            >
+              <mat-icon class="material-icons-outlined font-thin scale-75"
+                >shield_person</mat-icon
+              >
+              <span>{{
+                member.admin ? 'Take away admin' : 'Grant admin'
+              }}</span>
+            </button>
+            }
+          </mat-menu>
           }
         </li>
         }
       </ul>
       <div class="w-full flex px-4">
-        <div (click)="openAddMembersDialog()"
+        <div
+          (click)="openAddMembersDialog()"
           class="w-full flex items-center gap-2 p-2 rounded hover:bg-gray-100 cursor-pointer"
         >
           <div
@@ -58,16 +83,15 @@ import { AddMembersDialogComponent } from './add-members-dialog.component';
       </div>
     </div>
   `,
-  imports: [AvatarComponent, MatIconModule],
+  imports: [AvatarComponent, MatIconModule, MatMenuModule],
 })
 export class ConversationSettingsComponent {
   @Input({ required: true }) conversation!: Conversation;
   @Input({ required: true }) admin!: boolean;
   @Output() removeMember: EventEmitter<string> = new EventEmitter<string>();
+  @Output() toggleAdmin: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(public dialog: MatDialog) {}
-
-  memberToBeRemoved: string | undefined;
 
   openAddMembersDialog() {
     const dialogRef = this.dialog.open(AddMembersDialogComponent, {
@@ -76,7 +100,7 @@ export class ConversationSettingsComponent {
     });
   }
 
-  openRemoveMemberConfirmDialog() {
+  openRemoveMemberConfirmDialog(memberUid: string) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '360px',
       enterAnimationDuration: 120,
@@ -90,9 +114,8 @@ export class ConversationSettingsComponent {
       if (!result.data) {
         return;
       }
-      if (result.data === true && this.memberToBeRemoved) {
-        this.removeMember.emit(this.memberToBeRemoved);
-        this.memberToBeRemoved = undefined;
+      if (result.data === true && memberUid) {
+        this.removeMember.emit(memberUid);
       }
     });
   }
