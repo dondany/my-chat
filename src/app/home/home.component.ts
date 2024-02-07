@@ -8,6 +8,7 @@ import { MessageBoxComponent } from './conversation/ui/message-box.component';
 import { AvatarComponent } from '../shared/ui/avatar-component';
 import { AuthService } from '../shared/data-access/auth.service';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   standalone: true,
@@ -21,12 +22,28 @@ import { MatIconModule } from '@angular/material/icon';
             conversationService.currentConversation$.next($event.uid)
           "
         />
-        <div class="mt-auto p-6">
-          <button (click)="authService.logout()" class="flex gap-1 items-center px-2 py-1 rounded bg-indigo-400 text-white hover:bg-indigo-500">
-            <!-- <app-avatar [imgUrls]="[]"></app-avatar> -->
-            <mat-icon>logout</mat-icon>
-            Sign out
+
+        <div class="mt-auto flex gap-3 justify-start items-center p-4 border-t">
+          <button [matMenuTriggerFor]="userMenu">
+            <app-avatar [imgUrls]="[authService.userDetails()?.imgUrl!]">
+            </app-avatar>
           </button>
+          <mat-menu #userMenu="matMenu">
+            <button mat-menu-item (click)="authService.logout()">
+              <mat-icon class="material-icons-outlined font-thin scale-75">
+                logout
+              </mat-icon>
+              <span>Log out</span>
+            </button>
+          </mat-menu>
+          <div class="flex flex-col">
+            <span class="font-medium">
+              {{ authService.userDetails()?.username }}
+            </span>
+            <span class="text-xs text-gray-500">
+              {{ authService.userDetails()?.email }}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -42,7 +59,8 @@ import { MatIconModule } from '@angular/material/icon';
     ConversationList,
     MessageBoxComponent,
     AvatarComponent,
-    MatIconModule
+    MatIconModule,
+    MatMenuModule,
   ],
 })
 export default class HomeComponent {
@@ -67,6 +85,6 @@ export default class HomeComponent {
       if (!this.authService.user()) {
         this.router.navigate(['auth', 'login']);
       }
-    })
+    });
   }
 }
