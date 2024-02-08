@@ -12,7 +12,7 @@ import { Member } from '../../../shared/model/user';
   standalone: true,
   selector: 'app-conversation-settings',
   template: `
-    <div class="w-60 h-full border-l flex flex-col items-center">
+    <div class="w-60 h-full p-2 border-l flex flex-col items-center">
       <div class="flex flex-col gap-3 items-center mt-12">
         <app-avatar
           [imgUrls]="conversation.imgUrls ? conversation.imgUrls : []"
@@ -20,66 +20,107 @@ import { Member } from '../../../shared/model/user';
         <span class="font-medium text-lg">{{ conversation.name }}</span>
       </div>
 
-      <span class="mt-12">Chat members</span>
-      <ul class="font-medium w-full p-4">
-        @for(member of conversation.members; track member.uid) {
-        <li class="p-2 w-full rounded flex gap-3 items-center">
-          <app-avatar [imgUrls]="[member.imgUrl]" size="s"></app-avatar>
-          <div class="flex flex-col">
-            <span>{{ member.username }}</span>
-            @if(member.admin) {
-            <span class="text-xs text-gray-400">Administrator</span>
-            }
-          </div>
-          @if (admin) {
-          <button
-            class="ml-auto flex items-center justify-center p-1 rounded-full cursor-pointer hover:bg-gray-200"
-            [matMenuTriggerFor]="menu"
-          >
-            <mat-icon class="material-icons-outlined font-thin scale-75"
-              >more_horiz</mat-icon
-            >
-          </button>
-          <mat-menu #menu="matMenu">
+      <div class="w-full">
+        <button
+          (click)="configurationOpened = !configurationOpened"
+          class="flex items-center w-full p-2 rounded hover:bg-gray-100"
+        >
+          <span>Configure chat</span>
+          @if (!configurationOpened) {
+          <mat-icon class="ml-auto">chevron_right</mat-icon>
+          } @else {
+          <mat-icon class="ml-auto">expand_more</mat-icon>
+          }
+        </button>
+        @if(configurationOpened) {
+        <ul>
+          <li>
             <button
-              mat-menu-item
-              (click)="openRemoveMemberConfirmDialog(member.uid)"
+              class="flex items-center w-full p-2 gap-3 rounded hover:bg-gray-100"
             >
-              <mat-icon class="material-icons-outlined font-thin scale-75"
-                >person_remove</mat-icon
+              <div
+                class="flex items-center justify-center  w-6 h-6 rounded-full bg-gray-200"
               >
-              <span>Remove member</span>
+                <mat-icon class="scale-[.6]">edit</mat-icon>
+              </div>
+              <span>Change name</span>
             </button>
+          </li>
+        </ul>
+        }
+      </div>
+
+      <div class="w-full">
+        <button
+          (click)="membersOpened = !membersOpened"
+          class="flex items-center w-full p-2 rounded hover:bg-gray-100"
+        >
+          <span>Members</span>
+          @if (!membersOpened) {
+          <mat-icon class="ml-auto">chevron_right</mat-icon>
+          } @else {
+          <mat-icon class="ml-auto">expand_more</mat-icon>
+          }
+        </button>
+        @if(membersOpened) {
+        <ul class="font-medium w-full">
+          @for(member of conversation.members; track member.uid) {
+          <li class="w-full rounded flex gap-3 items-center p-2">
+            <app-avatar [imgUrls]="[member.imgUrl]" size="s"></app-avatar>
+            <div class="flex flex-col">
+              <span>{{ member.username }}</span>
+              @if(member.admin) {
+              <span class="text-xs text-gray-400">Administrator</span>
+              }
+            </div>
             @if (admin) {
             <button
-              mat-menu-item
-              (click)="this.toggleAdmin.emit(member.uid)"
+              class="ml-auto flex items-center justify-center p-1 rounded-full cursor-pointer hover:bg-gray-200"
+              [matMenuTriggerFor]="menu"
             >
               <mat-icon class="material-icons-outlined font-thin scale-75"
-                >shield_person</mat-icon
+                >more_horiz</mat-icon
               >
-              <span>{{
-                member.admin ? 'Take away admin' : 'Grant admin'
-              }}</span>
             </button>
+            <mat-menu #menu="matMenu">
+              <button
+                mat-menu-item
+                (click)="openRemoveMemberConfirmDialog(member.uid)"
+              >
+                <mat-icon class="material-icons-outlined font-thin scale-75"
+                  >person_remove</mat-icon
+                >
+                <span>Remove member</span>
+              </button>
+              @if (admin) {
+              <button mat-menu-item (click)="this.toggleAdmin.emit(member.uid)">
+                <mat-icon class="material-icons-outlined font-thin scale-75"
+                  >shield_person</mat-icon
+                >
+                <span>{{
+                  member.admin ? 'Take away admin' : 'Grant admin'
+                }}</span>
+              </button>
+              }
+            </mat-menu>
             }
-          </mat-menu>
+          </li>
           }
-        </li>
+          <li>
+            <button
+              (click)="openAddMembersDialog()"
+              class="w-full flex items-center gap-2 p-2 rounded hover:bg-gray-100 cursor-pointer"
+            >
+              <div
+                class="flex justify-center items-center p-1 rounded-full cursor-pointer bg-gray-200"
+              >
+                <mat-icon class="material-symbols-outlined">add</mat-icon>
+              </div>
+              <span>Add members</span>
+            </button>
+          </li>
+        </ul>
         }
-      </ul>
-      <div class="w-full flex px-4">
-        <div
-          (click)="openAddMembersDialog()"
-          class="w-full flex items-center gap-2 p-2 rounded hover:bg-gray-100 cursor-pointer"
-        >
-          <div
-            class="flex justify-center items-center p-1 rounded-full cursor-pointer bg-gray-200"
-          >
-            <mat-icon class="material-symbols-outlined">add</mat-icon>
-          </div>
-          <span>Add members</span>
-        </div>
       </div>
     </div>
   `,
@@ -90,6 +131,9 @@ export class ConversationSettingsComponent {
   @Input({ required: true }) admin!: boolean;
   @Output() removeMember: EventEmitter<string> = new EventEmitter<string>();
   @Output() toggleAdmin: EventEmitter<string> = new EventEmitter<string>();
+
+  configurationOpened: boolean = false;
+  membersOpened: boolean = false;
 
   constructor(public dialog: MatDialog) {}
 
