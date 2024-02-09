@@ -7,6 +7,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog.compon
 import { AddMembersDialogComponent } from './add-members-dialog.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { Member } from '../../../shared/model/user';
+import { ChangeConversationNameDialogComponent } from './change-conversation-name-dialog.component';
 
 @Component({
   standalone: true,
@@ -36,6 +37,7 @@ import { Member } from '../../../shared/model/user';
         <ul>
           <li>
             <button
+              (click)="openChangeConversationNameDialog()"
               class="flex items-center w-full p-2 gap-3 rounded hover:bg-gray-100"
             >
               <div
@@ -131,6 +133,7 @@ export class ConversationSettingsComponent {
   @Input({ required: true }) admin!: boolean;
   @Output() removeMember: EventEmitter<string> = new EventEmitter<string>();
   @Output() toggleAdmin: EventEmitter<string> = new EventEmitter<string>();
+  @Output() changeConversationName: EventEmitter<string> = new EventEmitter<string>();
 
   configurationOpened: boolean = false;
   membersOpened: boolean = false;
@@ -146,7 +149,7 @@ export class ConversationSettingsComponent {
 
   openRemoveMemberConfirmDialog(memberUid: string) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '360px',
+      width: '640px',
       enterAnimationDuration: 120,
       exitAnimationDuration: 120,
       data: {
@@ -162,5 +165,25 @@ export class ConversationSettingsComponent {
         this.removeMember.emit(memberUid);
       }
     });
+  }
+
+  openChangeConversationNameDialog() {
+    const dialogRef = this.dialog.open(ChangeConversationNameDialogComponent, {
+      width: '360px',
+      enterAnimationDuration: 120,
+      exitAnimationDuration: 120,
+      data: {
+        name: this.conversation.name,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result.data) {
+        return;
+      }
+      if (result.data !== this.conversation.name) {
+        this.changeConversationName.emit(result.data);
+      }
+    })
   }
 }

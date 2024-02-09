@@ -146,6 +146,10 @@ export class ConversationService {
   }
 
   getName(conversation: Conversation) {
+    if (conversation.name || conversation.name !== '') {
+      return conversation.name;
+    }
+
     let name = conversation.members
       ?.filter((m) => m.uid !== this.authService.user()?.uid)
       .map((m) => m.username)
@@ -172,6 +176,7 @@ export class ConversationService {
       updateDoc(conversationDoc, {
         memberIds: conversation.memberIds,
         members: conversation.members,
+        name: conversation.name
       })
     );
   }

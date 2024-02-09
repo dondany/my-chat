@@ -53,6 +53,7 @@ import { AuthService } from '../../shared/data-access/auth.service';
         [@inOutAnimation]
         (removeMember)="removeMember($event)"
         (toggleAdmin)="grantAdmin($event)"
+        (changeConversationName)="changeConversationName($event)"
       ></app-conversation-settings>
       }
     </div>
@@ -114,6 +115,15 @@ export default class ConversationComponent {
     if (member) {
       member.admin = !member.admin;
     }
+    this.conversationService.update$.next(conversation);
+  }
+
+  changeConversationName(event: string) {
+    let conversation = {
+      ...this.conversationService.currentConversation(),
+      name: event
+    } as Conversation;
+    console.log(conversation);
     this.conversationService.update$.next(conversation);
   }
 }
