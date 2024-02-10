@@ -42,7 +42,6 @@ interface ConversationState {
 export class ConversationService {
   private firestore = inject(FIRESTORE);
   private authService = inject(AuthService);
-  private messageService = inject(MessageService);
 
   private authUser$ = toObservable(this.authService.user);
 
@@ -89,9 +88,6 @@ export class ConversationService {
             imgUrls: this.getImgUrls(conversation),
             name: this.getName(conversation),
           })),
-          tap((conversation) =>
-            this.messageService.currentConversation$.next(conversation)
-          ),
           map((currentConversation) => ({ currentConversation }))
         )
       )

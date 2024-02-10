@@ -25,6 +25,8 @@ import {
 import { collectionData } from 'rxfire/firestore';
 import { AuthService } from './auth.service';
 import { Conversation } from '../model/conversation';
+import { ConversationService } from './conversation.service';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 interface MessageState {
   messages: MessageDetails[];
@@ -38,9 +40,10 @@ interface MessageState {
 export class MessageService {
   private firestore = inject(FIRESTORE);
   private authService = inject(AuthService);
+  private conversationService = inject(ConversationService);
 
   //sources
-  currentConversation$ = new Subject<Conversation>();
+  currentConversation$ = toObservable(this.conversationService.currentConversation);
   conversation$ = new Subject<string>();
   add$ = new Subject<string>();
 
@@ -65,7 +68,7 @@ export class MessageService {
       )
       .with(
         this.currentConversation$.pipe(
-          switchMap((conversation) => this.getMessages(conversation.uid)),
+          switchMap((conversation) => this.getMessages(conversation!.uid)),
           map((messages) => 
             messages.map((message) => ({
               ...message,
@@ -73,7 +76,7 @@ export class MessageService {
               isCurrentUser: this.isCurrentUser(message.sender),
             }))
           ),
-          map((messages) => ({ messages }))
+          map((messages) => ({ messages })),
         )
       )
       .with(
