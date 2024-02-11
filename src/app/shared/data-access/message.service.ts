@@ -44,7 +44,6 @@ export class MessageService {
 
   //sources
   currentConversation$ = toObservable(this.conversationService.currentConversation);
-  conversation$ = new Subject<string>();
   add$ = new Subject<string>();
 
   //state
