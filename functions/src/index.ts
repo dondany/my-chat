@@ -54,17 +54,41 @@ export const messageCreated = onDocumentCreated(
     }
     const data = snapshot.data();
     const messageContent = data.content;
+    const messageId = event.params.messageId;
+    const senderId = data.sender;
+    const messageCreated = data.created;
     const conversationId = event.params.conversationId;
+    const latestMessageId = conversationId + '_' + senderId;
 
     const conversationRef = admin
       .firestore()
       .collection('conversations')
       .doc(conversationId);
 
+    const latestMessageRef = admin
+      .firestore()
+      .collection('latestMessages')
+      .doc(latestMessageId);
+
     return admin
       .firestore()
       .runTransaction(async (trx) => {
-        trx.update(conversationRef, {latestMessage: messageContent});
+        trx.update(conversationRef, { latestMessage: messageContent });
+        const latestMessageDoc = await latestMessageRef.get();
+        if (latestMessageDoc) {
+          trx.update(latestMessageRef, {
+            messageUid: messageId,
+            messageCreated: messageCreated,
+          });
+        } else {
+          trx.create(latestMessageRef, {
+            uid: latestMessageId,
+            userUid: senderId,
+            conversationUid: conversationId,
+            messageUid: messageId,
+            messageCreated: messageCreated,
+          });
+        }
       })
       .catch((error) => {
         console.error('Transaction failed: ', error);
