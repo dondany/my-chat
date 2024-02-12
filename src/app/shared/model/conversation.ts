@@ -10,7 +10,9 @@ export interface Conversation {
     updated?: string;
     createdBy?: string;
     latestMessage?: string;
+    latestMessageUid?: string;
     imgUrls?: string[];
+    newMessage?: boolean;
 }
 
 export interface CreateConversation {

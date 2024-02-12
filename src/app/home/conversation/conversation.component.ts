@@ -123,7 +123,6 @@ export default class ConversationComponent {
       ...this.conversationService.currentConversation(),
       name: event
     } as Conversation;
-    console.log(conversation);
     this.conversationService.update$.next(conversation);
   }
 }

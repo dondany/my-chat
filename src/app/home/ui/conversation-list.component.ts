@@ -6,13 +6,20 @@ import { MatDialog } from '@angular/material/dialog';
 import { AvatarComponent } from '../../shared/ui/avatar-component';
 import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
 import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
   selector: 'app-conversation-list',
   template: `
-    <div class="px-6 py-4 h-14 flex justify-between items-center fill-none border-b">
-      <span class="text-3xl text-indigo-600 font-['Pacifico'] cursor-pointer" routerLink="/home">Chats</span>
+    <div
+      class="px-6 py-4 h-14 flex justify-between items-center fill-none border-b"
+    >
+      <span
+        class="text-3xl text-indigo-600 font-['Pacifico'] cursor-pointer"
+        routerLink="/home"
+        >Chats</span
+      >
       <div
         (click)="openDialog()"
         class="flex justify-center items-center p-2 rounded-full cursor-pointer hover:bg-gray-100"
@@ -30,13 +37,23 @@ import { RouterModule } from '@angular/router';
         <app-avatar [imgUrls]="conversation.imgUrls!"></app-avatar>
         <div class="flex flex-col">
           <span class="text-sm font-medium">{{ conversation.name }}</span>
-          <span class="text-gray-500 text-xs">{{ conversation.latestMessage | truncate : 25 }}</span>
+          <span
+            class="text-gray-400 text-xs"
+            [ngClass]="{'font-semibold text-gray-700': conversation.newMessage}"
+            >{{ conversation.latestMessage | truncate : 25 }}</span
+          >
         </div>
       </li>
       }
     </ul>
   `,
-  imports: [MatIconModule, AvatarComponent, TruncatePipe, RouterModule],
+  imports: [
+    MatIconModule,
+    AvatarComponent,
+    TruncatePipe,
+    RouterModule,
+    CommonModule,
+  ],
 })
 export class ConversationList {
   @Input({ required: true }) conversations: Conversation[] = [];

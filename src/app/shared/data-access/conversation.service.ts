@@ -29,6 +29,8 @@ import { AuthService } from './auth.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { UserDetails } from '../model/user';
 import { MessageService } from './message.service';
+import { LatestMessageService } from './latest-message.service';
+import { LatestMessage } from '../model/latest-message';
 
 interface ConversationState {
   conversations: Conversation[];
@@ -42,8 +44,12 @@ interface ConversationState {
 export class ConversationService {
   private firestore = inject(FIRESTORE);
   private authService = inject(AuthService);
+  private latestMessageService = inject(LatestMessageService);
 
   private authUser$ = toObservable(this.authService.user);
+  private latestMessages$ = toObservable(
+    this.latestMessageService.latestMessages
+  );
 
   //sources
   conversations$ = this.authUser$.pipe(
@@ -68,16 +74,23 @@ export class ConversationService {
   constructor() {
     //reducers
     connect(this.state)
-      .with(
-        this.conversations$.pipe(
-          map((conversations) => {
-            return conversations.map((conversation) => ({
+      .with(combineLatest([this.conversations$, this.latestMessages$]).pipe(
+        map(([conversations, latestMessages]) => {
+          return conversations.map((conversation : Conversation) => {
+            const latestMessage = latestMessages
+            .filter((lm) => lm.conversationUid !== this.currentConversation()?.uid)
+            .filter((lm) => lm.conversationUid === conversation.uid)
+            .find((lm) => lm.messageUid !== conversation.latestMessageUid);
+
+            return {
               ...conversation,
               imgUrls: this.getImgUrls(conversation),
               name: this.getName(conversation),
-            }));
-          }),
-          map((conversations) => ({ conversations }))
+              newMessage: latestMessage
+            } as Conversation;
+          })
+        }),
+        map((conversations) => ({ conversations }))
         )
       )
       .with(
@@ -172,8 +185,18 @@ export class ConversationService {
       updateDoc(conversationDoc, {
         memberIds: conversation.memberIds,
         members: conversation.members,
-        name: conversation.name
+        name: conversation.name,
       })
     );
+  }
+
+  isNewMessage(latestMessage: LatestMessage, latestMessageUid: string) {
+    if (
+      !latestMessage ||
+      latestMessage.messageUid !== latestMessageUid
+    ) {
+      return true;
+    }
+    return false;
   }
 }

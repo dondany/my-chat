@@ -27,6 +27,8 @@ import { AuthService } from './auth.service';
 import { Conversation } from '../model/conversation';
 import { ConversationService } from './conversation.service';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { LatestMessage } from '../model/latest-message';
+import { LatestMessageService } from './latest-message.service';
 
 interface MessageState {
   messages: MessageDetails[];
@@ -41,9 +43,12 @@ export class MessageService {
   private firestore = inject(FIRESTORE);
   private authService = inject(AuthService);
   private conversationService = inject(ConversationService);
+  private latestMessageService = inject(LatestMessageService);
 
   //sources
-  currentConversation$ = toObservable(this.conversationService.currentConversation);
+  currentConversation$ = toObservable(
+    this.conversationService.currentConversation
+  );
   add$ = new Subject<string>();
 
   //state
@@ -67,15 +72,17 @@ export class MessageService {
       )
       .with(
         this.currentConversation$.pipe(
-          switchMap((conversation) => this.getMessages(conversation!.uid)),
-          map((messages) => 
+          switchMap((conversation) => conversation ? this.getMessages(conversation!.uid): []),
+          tap((messages) => this.addLatestMessage(messages)),
+          map((messages) =>
             messages.map((message) => ({
+              uid: message.uid,
               ...message,
               sender: this.mapMember(message.sender),
               isCurrentUser: this.isCurrentUser(message.sender),
             }))
           ),
-          map((messages) => ({ messages })),
+          map((messages) => ({ messages }))
         )
       )
       .with(
@@ -109,7 +116,7 @@ export class MessageService {
       limit(50)
     );
 
-    return collectionData(messagesCollection, { idField: 'id' }).pipe(
+    return collectionData(messagesCollection, { idField: 'uid' }).pipe(
       map((messages) => [...messages].reverse())
     ) as Observable<Message[]>;
   }
@@ -125,5 +132,19 @@ export class MessageService {
 
   private isCurrentUser(uid: string) {
     return this.authService.user()?.uid === uid;
+  }
+
+  private addLatestMessage(messages: Message[]) {
+    if (!messages || messages.length === 0) {
+      return;
+    }
+    const lastMessage = messages[messages.length - 1];
+    const latestMessage = {
+      conversationUid: this.conversationService.currentConversation()?.uid,
+      userUid: this.authService.user()?.uid,
+      messageUid: lastMessage.uid,
+      messageCreated: lastMessage.created,
+    } as LatestMessage;
+    this.latestMessageService.set$.next(latestMessage);
   }
 }

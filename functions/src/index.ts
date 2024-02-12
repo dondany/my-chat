@@ -73,8 +73,11 @@ export const messageCreated = onDocumentCreated(
     return admin
       .firestore()
       .runTransaction(async (trx) => {
-        trx.update(conversationRef, { latestMessage: messageContent });
-        const latestMessageDoc = await latestMessageRef.get();
+        trx.update(conversationRef, {
+          latestMessage: messageContent,
+          latestMessageUid: messageId,
+        });
+        const latestMessageDoc = (await latestMessageRef.get()).data();
         if (latestMessageDoc) {
           trx.update(latestMessageRef, {
             messageUid: messageId,
