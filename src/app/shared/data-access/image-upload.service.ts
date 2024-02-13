@@ -3,7 +3,7 @@ import { Injectable, inject } from "@angular/core";
 import { ref } from 'firebase/storage';
 import { STORAGE } from "../../app.config";
 import { getDownloadURL, uploadBytesResumable } from "rxfire/storage";
-import { switchMap, tap } from "rxjs";
+import { exhaustMap, filter, switchMap, tap } from "rxjs";
 
 @Injectable({
     providedIn: 'root',
@@ -16,8 +16,8 @@ export class ImageUploadService {
         const fileRef = ref(this.storage, file.name);
 
         return uploadBytesResumable(fileRef, file).pipe(
-            tap((snap) => console.log(snap)),
-            switchMap((snap) => getDownloadURL(fileRef))
+            filter((snap) => snap.state === 'success'),
+            exhaustMap((snap) => getDownloadURL(fileRef))
         );
     }
 }
