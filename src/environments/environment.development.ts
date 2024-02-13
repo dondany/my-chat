@@ -2,7 +2,7 @@ export const environment = {
     firebase: {
       projectId: 'demo-project',
       appId: '******',
-      storageBucket: '********',
+      storageBucket: 'demo-project.appspot.com',
       apiKey: '*****',
       authDomain: '*****',
       messagingSenderId: '********',

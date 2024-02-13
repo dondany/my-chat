@@ -1,6 +1,6 @@
 import { Component, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { ConversationService } from '../shared/data-access/conversation.service';
 import { LoginService } from '../auth/login/data-access/login.service';
 import { ConversationList } from './ui/conversation-list.component';
@@ -35,6 +35,12 @@ import { MatMenuModule } from '@angular/material/menu';
               </mat-icon>
               <span>Log out</span>
             </button>
+            <button mat-menu-item [routerLink]="'profile/' + authService.user()!.uid">
+              <mat-icon class="material-icons-outlined font-thin scale-75">
+                edit
+              </mat-icon>
+              <span>Edit profile</span>
+            </button>
           </mat-menu>
           <div class="flex flex-col">
             <span class="font-medium">
@@ -61,6 +67,7 @@ import { MatMenuModule } from '@angular/material/menu';
     AvatarComponent,
     MatIconModule,
     MatMenuModule,
+    RouterModule
   ],
 })
 export default class HomeComponent {
