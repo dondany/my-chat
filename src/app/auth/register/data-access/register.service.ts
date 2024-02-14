@@ -17,8 +17,6 @@ interface RegisterState {
 @Injectable()
 export class RegisterService {
   private authService = inject(AuthService);
-  private firestore = inject(FIRESTORE);
-  private router = inject(Router);
 
   //sources
   error$ = new Subject<any>();
@@ -30,8 +28,7 @@ export class RegisterService {
         catchError((err) => {
           this.error$.next(err);
           return EMPTY;
-        }),
-        tap(() => this.router.navigate(['home']))
+        })
       )
     )
   );

@@ -14,7 +14,6 @@ interface LoginState {
 @Injectable()
 export class LoginService {
   private authService = inject(AuthService);
-  private router = inject(Router);
 
   //sources
   error$ = new Subject<any>();
@@ -26,8 +25,7 @@ export class LoginService {
         catchError((err) => {
           this.error$.next(err);
           return EMPTY;
-        }),
-        tap(() => this.router.navigate(['home']))
+        })
       )
     ),
   );

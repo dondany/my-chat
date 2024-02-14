@@ -9,11 +9,11 @@ import { authState } from 'rxfire/auth';
 import { AUTH, FIRESTORE } from '../../app.config';
 import { connect } from 'ngxtension/connect';
 import { Credentials } from '../model/credentials';
-import { from, defer, map, Observable, switchMap } from 'rxjs';
+import { from, defer, map, Observable, switchMap, tap, filter } from 'rxjs';
 import { UserDetails } from '../model/user';
-import { UserService } from './user.service';
 import { docData } from 'rxfire/firestore';
 import { doc } from 'firebase/firestore';
+import { Router } from '@angular/router';
 
 export type AuthUser = User | null | undefined;
 
@@ -28,6 +28,7 @@ interface AuthState {
 export class AuthService {
   private auth = inject(AUTH);
   private firestore = inject(FIRESTORE);
+  private router = inject(Router);
 
   //sources
   private user$ = authState(this.auth);
@@ -47,8 +48,10 @@ export class AuthService {
       .with(this.user$.pipe(map((user) => ({ user }))))
       .with(
         this.user$.pipe(
+          filter((user) => !!user),
           switchMap((user) => this.getAuthenticatedUserDetails(user!.uid)),
-          map((userDetails) => ({ userDetails }))
+          map((userDetails) => ({ userDetails })),
+          tap(() => this.router.navigate(['home'])),
         )
       );
   }
