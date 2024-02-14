@@ -29,17 +29,17 @@ import { MatMenuModule } from '@angular/material/menu';
             </app-avatar>
           </button>
           <mat-menu #userMenu="matMenu">
-            <button mat-menu-item (click)="authService.logout()">
-              <mat-icon class="material-icons-outlined font-thin scale-75">
-                logout
-              </mat-icon>
-              <span>Log out</span>
-            </button>
             <button mat-menu-item [routerLink]="'profile/' + authService.user()!.uid">
               <mat-icon class="material-icons-outlined font-thin scale-75">
                 edit
               </mat-icon>
               <span>Edit profile</span>
+            </button>
+            <button mat-menu-item (click)="authService.logout()">
+              <mat-icon class="material-icons-outlined font-thin scale-75">
+                logout
+              </mat-icon>
+              <span>Log out</span>
             </button>
           </mat-menu>
           <div class="flex flex-col">
