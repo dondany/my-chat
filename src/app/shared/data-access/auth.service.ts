@@ -9,17 +9,30 @@ import { authState } from 'rxfire/auth';
 import { AUTH, FIRESTORE } from '../../app.config';
 import { connect } from 'ngxtension/connect';
 import { Credentials } from '../model/credentials';
-import { from, defer, map, Observable, switchMap, tap, filter } from 'rxjs';
+import {
+  from,
+  defer,
+  map,
+  Observable,
+  switchMap,
+  tap,
+  filter,
+  EMPTY,
+  of,
+  pairwise,
+} from 'rxjs';
 import { UserDetails } from '../model/user';
 import { docData } from 'rxfire/firestore';
 import { doc } from 'firebase/firestore';
 import { Router } from '@angular/router';
 
-export type AuthUser = User | null | undefined;
+export type AuthUser = {
+  user: User;
+  userDetails: UserDetails;
+};
 
 interface AuthState {
-  user: AuthUser;
-  userDetails: UserDetails | undefined;
+  user: AuthUser | undefined | null;
 }
 
 @Injectable({
@@ -36,24 +49,27 @@ export class AuthService {
   //state
   private state = signal<AuthState>({
     user: undefined,
-    userDetails: undefined,
   });
 
   //selectors
-  user = computed(() => this.state().user);
-  userDetails = computed(() => this.state().userDetails);
+  user = computed(() => (!!this.state().user ? this.state().user!.user : null));
+  userDetails = computed(() =>
+    !!this.state().user ? this.state().user!.userDetails : null
+  );
 
   constructor() {
-    connect(this.state)
-      .with(this.user$.pipe(map((user) => ({ user }))))
-      .with(
-        this.user$.pipe(
-          filter((user) => !!user),
-          switchMap((user) => this.getAuthenticatedUserDetails(user!.uid)),
-          map((userDetails) => ({ userDetails })),
-          tap(() => this.router.navigate(['home'])),
-        )
-      );
+    connect(this.state).with(
+      this.user$.pipe(
+        switchMap((user) => this.getAuthenticatedUserDetails(user)),
+        pairwise(),
+        tap(([oldUser, newUser]) => {
+          if (!oldUser) {
+            this.router.navigate(['home']);
+          }
+        }),
+        map(([oldUser, newUser]) => ({ user: newUser }))
+      )
+    );
   }
 
   login(credentials: Credentials) {
@@ -84,10 +100,16 @@ export class AuthService {
     );
   }
 
-  getAuthenticatedUserDetails(uid: string) {
-    const user = doc(this.firestore, `users/${uid}`);
-
-    return docData(user, { idField: 'uid' }) as Observable<UserDetails>;
+  getAuthenticatedUserDetails(user: User | null) {
+    if (!user) {
+      return of(null);
+    }
+    const userDoc = doc(this.firestore, `users/${user.uid}`);
+    const details = docData(userDoc, {
+      idField: 'uid',
+    }) as Observable<UserDetails>;
+    return details.pipe(
+      map((details) => ({ user: user, userDetails: details } as AuthUser))
+    );
   }
-
 }
