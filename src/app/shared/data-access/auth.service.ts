@@ -20,19 +20,18 @@ import {
   EMPTY,
   of,
   pairwise,
+  Subject,
 } from 'rxjs';
 import { UserDetails } from '../model/user';
 import { docData } from 'rxfire/firestore';
 import { doc } from 'firebase/firestore';
 import { Router } from '@angular/router';
 
-export type AuthUser = {
-  user: User;
-  userDetails: UserDetails;
-};
+export type AuthUser = User | null | undefined;
 
 interface AuthState {
-  user: AuthUser | undefined | null;
+  user: AuthUser;
+  userDetails: UserDetails | undefined;
 }
 
 @Injectable({
@@ -45,31 +44,30 @@ export class AuthService {
 
   //sources
   private user$ = authState(this.auth);
+  private update$ = new Subject<void>();
 
   //state
   private state = signal<AuthState>({
     user: undefined,
+    userDetails: undefined,
   });
 
   //selectors
-  user = computed(() => (!!this.state().user ? this.state().user!.user : null));
-  userDetails = computed(() =>
-    !!this.state().user ? this.state().user!.userDetails : null
-  );
+  user = computed(() => this.state().user);
+  userDetails = computed(() => this.state().userDetails);
 
   constructor() {
-    connect(this.state).with(
-      this.user$.pipe(
-        switchMap((user) => this.getAuthenticatedUserDetails(user)),
-        pairwise(),
-        tap(([oldUser, newUser]) => {
-          if (!oldUser) {
-            this.router.navigate(['home']);
-          }
-        }),
-        map(([oldUser, newUser]) => ({ user: newUser }))
-      )
-    );
+    connect(this.state)
+      .with(this.user$.pipe(
+        tap(() => this.router.navigate(['home'])),
+        map((user) => ({ user })))
+        )
+      .with(
+        this.user$.pipe(
+          switchMap((user) => this.getAuthenticatedUserDetails(user)),
+          map((userDetails) => ({ userDetails }))
+        )
+      );
   }
 
   login(credentials: Credentials) {
@@ -100,16 +98,11 @@ export class AuthService {
     );
   }
 
-  getAuthenticatedUserDetails(user: User | null) {
+  getAuthenticatedUserDetails(user: AuthUser) {
     if (!user) {
-      return of(null);
+      return of(undefined);
     }
     const userDoc = doc(this.firestore, `users/${user.uid}`);
-    const details = docData(userDoc, {
-      idField: 'uid',
-    }) as Observable<UserDetails>;
-    return details.pipe(
-      map((details) => ({ user: user, userDetails: details } as AuthUser))
-    );
+    return docData(userDoc, { idField: 'uid' }) as Observable<UserDetails>;
   }
 }

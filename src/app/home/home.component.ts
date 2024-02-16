@@ -29,7 +29,7 @@ import { MatMenuModule } from '@angular/material/menu';
             </app-avatar>
           </button>
           <mat-menu #userMenu="matMenu">
-            <button mat-menu-item [routerLink]="'profile/' + authService.user()!.uid">
+            <button mat-menu-item [routerLink]="'profile/' + authService.user()?.uid">
               <mat-icon class="material-icons-outlined font-thin scale-75">
                 edit
               </mat-icon>
