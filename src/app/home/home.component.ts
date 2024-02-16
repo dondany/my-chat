@@ -9,6 +9,8 @@ import { AvatarComponent } from '../shared/ui/avatar-component';
 import { AuthService } from '../shared/data-access/auth.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { EditProfileDialogComponent } from './ui/edit-profile-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   standalone: true,
@@ -29,7 +31,7 @@ import { MatMenuModule } from '@angular/material/menu';
             </app-avatar>
           </button>
           <mat-menu #userMenu="matMenu">
-            <button mat-menu-item [routerLink]="'profile/' + authService.user()?.uid">
+            <button mat-menu-item (click)="openEditProfileDialog()">
               <mat-icon class="material-icons-outlined font-thin scale-75">
                 edit
               </mat-icon>
@@ -76,7 +78,7 @@ export default class HomeComponent {
 
   private router = inject(Router);
 
-  constructor() {
+  constructor(public dialog: MatDialog) {
     effect(() => {
       if (this.conversationService.currentConversation()) {
         this.router.navigate([
@@ -93,5 +95,9 @@ export default class HomeComponent {
         this.router.navigate(['auth', 'login']);
       }
     });
+  }
+
+  openEditProfileDialog(): void {
+    const dialogRef = this.dialog.open(EditProfileDialogComponent, {});
   }
 }
