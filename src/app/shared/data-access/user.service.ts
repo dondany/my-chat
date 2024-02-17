@@ -2,7 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { FIRESTORE } from '../../app.config';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { AuthService } from './auth.service';
-import { UserDetails } from '../model/user';
+import { UserDetails, UserUpdate } from '../model/user';
 import {
   EMPTY,
   Observable,
@@ -54,6 +54,7 @@ export class UserService {
     distinctUntilChanged()
   );
   profilePicture$ = new Subject<File>();
+  update$ = new Subject<UserUpdate>();
 
   //state
   private state = signal<UserState>({
@@ -77,6 +78,13 @@ export class UserService {
       .with(
         this.profilePicture$.pipe(
           exhaustMap((file) => this.updateProfilePicture(file)),
+          ignoreElements(),
+          catchError((error) => of({ error }))
+        )
+      )
+      .with(
+        this.update$.pipe(
+          exhaustMap((userUpdate) => this.update(userUpdate)),
           ignoreElements(),
           catchError((error) => of({ error }))
         )
@@ -110,6 +118,16 @@ export class UserService {
         );
         return defer(() => updateDoc(userDoc, { imgUrl }));
       })
+    );
+  }
+
+  private update(userUpdate: UserUpdate) {
+    const userDoc = doc(
+      this.firestore,
+      `users/${this.authService.userDetails()!.uid}`
+    );
+    return defer(() =>
+      updateDoc(userDoc, { ...userUpdate })
     );
   }
 }

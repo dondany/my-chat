@@ -8,6 +8,8 @@ export interface UserDetails {
     username: string;
     email: string;
     imgUrl: string;
+    firstName?: string;
+    lastName?: string;
 }
 
 export interface Member {
@@ -16,4 +18,9 @@ export interface Member {
     email: string;
     imgUrl: string;
     admin?: boolean;
+}
+
+export interface UserUpdate {
+    firstName: string;
+    lastName: string;
 }

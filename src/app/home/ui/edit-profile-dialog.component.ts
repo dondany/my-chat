@@ -1,18 +1,24 @@
 import { Component, Input, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
+import {
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { UserDetails } from '../../shared/model/user';
 import { AuthService } from '../../shared/data-access/auth.service';
 import { UserService } from '../../shared/data-access/user.service';
+import { ProfileFormService } from '../data-access/profile-form.service';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   standalone: true,
   selector: 'app-edit-profile-dialog',
   template: `
     <div class="p-14" mat-dialog-content>
-    <h1 mat-dialog-title>My Profile</h1>
+      <h1 mat-dialog-title>My Profile</h1>
       <div class="flex gap-14">
         <div class="">
           <div
@@ -42,16 +48,16 @@ import { UserService } from '../../shared/data-access/user.service';
           </div>
         </div>
         <div class="flex flex-col">
-          <form action="" class="flex flex-col">
+          <form [formGroup]="form" action="" class="flex flex-col" (ngSubmit)="this.profileFormService.onSubmit()">
             <div class="flex gap-6">
               <mat-form-field class="">
                 <mat-label>First name</mat-label>
-                <input matInput type="text" />
+                <input matInput formControlName="firstName" type="text" />
               </mat-form-field>
 
               <mat-form-field class="">
                 <mat-label>Last name</mat-label>
-                <input matInput type="text" />
+                <input matInput formControlName="lastName" type="text" />
               </mat-form-field>
             </div>
 
@@ -78,11 +84,22 @@ import { UserService } from '../../shared/data-access/user.service';
       </div>
     </div>
   `,
-  imports: [MatButtonModule, MatIconModule, MatInputModule, MatDialogTitle, MatDialogContent],
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatDialogTitle,
+    MatDialogContent,
+    ReactiveFormsModule
+  ],
+  providers: [ProfileFormService],
 })
 export class EditProfileDialogComponent {
   authService = inject(AuthService);
   userService = inject(UserService);
+  profileFormService = inject(ProfileFormService);
+
+  readonly form = this.profileFormService.form;
 
   selectedImg: File | null = null;
   uploadedImgUrl: string | undefined;
@@ -95,5 +112,4 @@ export class EditProfileDialogComponent {
     }
     this.userService.profilePicture$.next(event.target.files[0]);
   }
-  
 }
