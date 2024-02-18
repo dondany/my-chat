@@ -13,6 +13,7 @@ import {
   distinctUntilChanged,
   exhaustMap,
   filter,
+  forkJoin,
   ignoreElements,
   map,
   of,
@@ -127,7 +128,15 @@ export class UserService {
       `users/${this.authService.userDetails()!.uid}`
     );
     return defer(() =>
-      updateDoc(userDoc, { ...userUpdate })
+      forkJoin([updateDoc(userDoc, { ...userUpdate }), this.updateEmail(userUpdate), this.updatePassword(userUpdate)])
     );
+  }
+
+  private updateEmail(userUpdate: UserUpdate) {
+    return this.authService.updateEmail(userUpdate.email);
+  }
+
+  private updatePassword(userUpdate: UserUpdate) {
+    return this.authService.updatePassword(userUpdate.password);
   }
 }

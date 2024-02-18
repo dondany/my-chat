@@ -63,13 +63,22 @@ import { ReactiveFormsModule } from '@angular/forms';
 
             <mat-form-field>
               <mat-label>Email</mat-label>
-              <input matInput type="text" />
+              <input matInput type="email" formControlName="email"/>
             </mat-form-field>
 
             <mat-form-field>
               <mat-label>Password</mat-label>
-              <input matInput type="text" />
+              <input matInput type="password" formControlName="password"/>
             </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Confirm Password</mat-label>
+              <input matInput type="password" formControlName="confirmPassword" [errorStateMatcher]="profileFormService.confirmErrorMatcher"/>
+              <mat-error>
+                Password mismatch!
+              </mat-error>
+            </mat-form-field>
+            
 
             <button
               mat-raised-button
@@ -90,7 +99,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatInputModule,
     MatDialogTitle,
     MatDialogContent,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [ProfileFormService],
 })
@@ -104,7 +113,9 @@ export class EditProfileDialogComponent {
   selectedImg: File | null = null;
   uploadedImgUrl: string | undefined;
 
-  constructor(public dialogRef: MatDialogRef<EditProfileDialogComponent>) {}
+  constructor(public dialogRef: MatDialogRef<EditProfileDialogComponent>) {
+    //add effect to react to profile update state!
+  }
 
   onFileSelected(event: any) {
     if (!event.target.files[0]) {
@@ -112,4 +123,5 @@ export class EditProfileDialogComponent {
     }
     this.userService.profilePicture$.next(event.target.files[0]);
   }
+  
 }

@@ -4,6 +4,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  updateEmail,
+  updatePassword
 } from 'firebase/auth';
 import { authState } from 'rxfire/auth';
 import { AUTH, FIRESTORE } from '../../app.config';
@@ -102,7 +104,23 @@ export class AuthService {
     if (!user) {
       return of(undefined);
     }
+
     const userDoc = doc(this.firestore, `users/${user.uid}`);
     return docData(userDoc, { idField: 'uid' }) as Observable<UserDetails>;
+  }
+
+  updateEmail(email: string | undefined) {
+    if (!email || email === '' || email === this.user()?.email) {
+      return EMPTY;
+    }
+
+    return defer(() => updateEmail(this.user()!, email));
+  }
+
+  updatePassword(password: string | undefined) {
+    if (!password || password === '') {
+      return EMPTY;
+    }
+    return defer(() => updatePassword(this.user()!, password));
   }
 }
