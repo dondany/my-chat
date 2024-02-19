@@ -55,7 +55,9 @@ export class UserService {
     distinctUntilChanged()
   );
   profilePicture$ = new Subject<File>();
-  update$ = new Subject<UserUpdate>();
+  updateDetails$ = new Subject<UserUpdate>();
+  updateEmail$ = new Subject<string>();
+  updatePassword$ = new Subject<string>();
 
   //state
   private state = signal<UserState>({
@@ -84,8 +86,22 @@ export class UserService {
         )
       )
       .with(
-        this.update$.pipe(
+        this.updateDetails$.pipe(
           exhaustMap((userUpdate) => this.update(userUpdate)),
+          ignoreElements(),
+          catchError((error) => of({ error }))
+        )
+      )
+      .with(
+        this.updateEmail$.pipe(
+          exhaustMap((email) => this.updateEmail(email)),
+          ignoreElements(),
+          catchError((error) => of({ error }))
+        )
+      )
+      .with(
+        this.updatePassword$.pipe(
+          exhaustMap((password) => this.updatePassword(password)),
           ignoreElements(),
           catchError((error) => of({ error }))
         )
@@ -127,16 +143,14 @@ export class UserService {
       this.firestore,
       `users/${this.authService.userDetails()!.uid}`
     );
-    return defer(() =>
-      forkJoin([updateDoc(userDoc, { ...userUpdate }), this.updateEmail(userUpdate), this.updatePassword(userUpdate)])
-    );
+    return defer(() => updateDoc(userDoc, { ...userUpdate }));
   }
 
-  private updateEmail(userUpdate: UserUpdate) {
-    return this.authService.updateEmail(userUpdate.email);
+  private updateEmail(email: string) {
+    return this.authService.updateEmail(email);
   }
 
-  private updatePassword(userUpdate: UserUpdate) {
-    return this.authService.updatePassword(userUpdate.password);
+  private updatePassword(password: string) {
+    return this.authService.updatePassword(password);
   }
 }

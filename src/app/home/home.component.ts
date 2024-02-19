@@ -98,6 +98,7 @@ export default class HomeComponent {
   }
 
   openEditProfileDialog(): void {
-    const dialogRef = this.dialog.open(EditProfileDialogComponent, {});
+    const dialogRef = this.dialog.open(EditProfileDialogComponent, {
+    });
   }
 }

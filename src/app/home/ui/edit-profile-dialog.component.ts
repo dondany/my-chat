@@ -47,8 +47,15 @@ import { ReactiveFormsModule } from '@angular/forms';
             </div>
           </div>
         </div>
-        <div class="flex flex-col">
-          <form [formGroup]="form" action="" class="flex flex-col" (ngSubmit)="this.profileFormService.onSubmit()">
+        <div class="flex flex-col gap-3">
+          
+          <form
+            [formGroup]="userDetailsForm"
+            action=""
+            class="flex flex-col"
+            (ngSubmit)="this.profileFormService.onUpdateDetails()"
+          >
+          <h3>User Information</h3>
             <div class="flex gap-6">
               <mat-form-field class="">
                 <mat-label>First name</mat-label>
@@ -63,30 +70,51 @@ import { ReactiveFormsModule } from '@angular/forms';
 
             <mat-form-field>
               <mat-label>Email</mat-label>
-              <input matInput type="email" formControlName="email"/>
+              <input matInput type="email" formControlName="email" />
             </mat-form-field>
-
-            <mat-form-field>
-              <mat-label>Password</mat-label>
-              <input matInput type="password" formControlName="password"/>
-            </mat-form-field>
-
-            <mat-form-field>
-              <mat-label>Confirm Password</mat-label>
-              <input matInput type="password" formControlName="confirmPassword" [errorStateMatcher]="profileFormService.confirmErrorMatcher"/>
-              <mat-error>
-                Password mismatch!
-              </mat-error>
-            </mat-form-field>
-            
 
             <button
               mat-raised-button
               color="primary"
               type="submit"
               class="ml-auto"
+              [disabled]="!userDetailsForm.valid"
             >
-              Save
+              Save Information
+            </button>
+          </form>
+
+          
+          <form
+            [formGroup]="passwordForm"
+            class="flex flex-col"
+            (ngSubmit)="this.profileFormService.onUpdatePassword()"
+          >
+          <h3>Password</h3>
+            <mat-form-field>
+              <mat-label>Password</mat-label>
+              <input matInput type="password" formControlName="password" />
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Confirm Password</mat-label>
+              <input
+                matInput
+                type="password"
+                formControlName="confirmPassword"
+                [errorStateMatcher]="profileFormService.confirmErrorMatcher"
+              />
+              <mat-error> Password mismatch! </mat-error>
+            </mat-form-field>
+
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              class="ml-auto"
+              [disabled]="!passwordForm.valid"
+            >
+              Change Password
             </button>
           </form>
         </div>
@@ -102,13 +130,17 @@ import { ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule,
   ],
   providers: [ProfileFormService],
+  styles: `
+
+  `
 })
 export class EditProfileDialogComponent {
   authService = inject(AuthService);
   userService = inject(UserService);
   profileFormService = inject(ProfileFormService);
 
-  readonly form = this.profileFormService.form;
+  readonly userDetailsForm = this.profileFormService.userDetailsForm;
+  readonly passwordForm = this.profileFormService.passwordForm;
 
   selectedImg: File | null = null;
   uploadedImgUrl: string | undefined;
@@ -123,5 +155,4 @@ export class EditProfileDialogComponent {
     }
     this.userService.profilePicture$.next(event.target.files[0]);
   }
-  
 }

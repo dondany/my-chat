@@ -5,60 +5,62 @@ import { UserService } from "../../shared/data-access/user.service";
 import { Subject } from "rxjs";
 import { UserUpdate } from "../../shared/model/user";
 import { confirmPasswordValidator } from "../../shared/validators/confirm-password.validator";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Injectable()
 export class ProfileFormService {
     private authService = inject(AuthService);
     private userService = inject(UserService);
+    private formBuilder = inject(FormBuilder);
 
-    readonly form = inject(FormBuilder).group({
-        firstName: [this.authService.userDetails()?.firstName, [Validators.required]],
-        lastName: [this.authService.userDetails()?.lastName, [Validators.required]],
-        email: [this.authService.userDetails()?.email, [Validators.email]],
-        password: ["", []],
-        confirmPassword: ["", []],
-    },
-    { validators: [confirmPasswordValidator] }
+    readonly userDetailsForm = this.formBuilder.group({
+        firstName: [this.authService.userDetails()?.firstName, []],
+        lastName: [this.authService.userDetails()?.lastName, []],
+        email: [this.authService.userDetails()?.email, [Validators.email, Validators.required]],
+    }
     );
 
+    readonly passwordForm = this.formBuilder.group({
+        password: ["", [Validators.required]],
+        confirmPassword: ["", [Validators.required]],
+    },
+    { validators: [confirmPasswordValidator] }
+    )
+
     get password() {
-        return this.form.get("password")!;
+        return this.passwordForm.get("password")!;
     }
 
     get confirmPassword() {
-        return this.form.get("confirmPassword")!;
-    }
-
-    constructor() {
-        this.password.valueChanges.subscribe((value) => {
-            if (!value) {
-               this.confirmPassword.removeValidators(Validators.required);
-            } else {
-                this.confirmPassword.addValidators(Validators.required);
-            }
-        });
+        return this.passwordForm.get("confirmPassword")!;
     }
 
     confirmErrorMatcher = {
         isErrorState: (control: FormControl, form: FormGroupDirective): boolean => {
             const controlInvalid = control.touched && control.invalid;
-            const formInvalid = control.touched && this.confirmPassword.touched && this.form.invalid;
+            const formInvalid = control.touched && this.confirmPassword.touched && this.userDetailsForm.invalid;
             return controlInvalid || formInvalid;
         }
     }
 
-    onSubmit() {
-        this.form.markAllAsTouched();
-        if (!this.form.valid) {
+    onUpdateDetails() {
+        this.userDetailsForm.markAllAsTouched();
+        if (!this.userDetailsForm.valid) {
             return;
         }
 
         const userUpdate = {
-            firstName: this.form.value!.firstName,
-            lastName: this.form.value!.lastName,
-            email: this.form.value.email,
-            password: this.form.value.password
+            firstName: this.userDetailsForm.value!.firstName,
+            lastName: this.userDetailsForm.value!.lastName,
+            email: this.userDetailsForm.value!.email,
         } as UserUpdate;
-        this.userService.update$.next(userUpdate);
+        this.userService.updateDetails$.next(userUpdate);
+    }
+
+    onUpdatePassword() {
+        if (!this.passwordForm.valid) {
+            return;
+        }
+        this.userService.updatePassword$.next(this.passwordForm.value!.password!);
     }
 }
