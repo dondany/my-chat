@@ -14,8 +14,8 @@ export class ProfileFormService {
     private formBuilder = inject(FormBuilder);
 
     readonly userDetailsForm = this.formBuilder.group({
-        firstName: [this.authService.userDetails()?.firstName, []],
-        lastName: [this.authService.userDetails()?.lastName, []],
+        firstName: [this.authService.userDetails()?.firstName, [Validators.required]],
+        lastName: [this.authService.userDetails()?.lastName, [Validators.required]],
         email: [this.authService.userDetails()?.email, [Validators.email, Validators.required]],
     }
     );
@@ -49,10 +49,20 @@ export class ProfileFormService {
             return;
         }
 
+        let username = this.authService.userDetails()?.username;
+
+        if (this.userDetailsForm.value!.firstName) {
+            username = this.userDetailsForm.value!.firstName;
+            if (this.userDetailsForm.value!.lastName) {
+                username = username + ' ' + this.userDetailsForm.value!.lastName;
+            }
+        }
+        
         const userUpdate = {
             firstName: this.userDetailsForm.value!.firstName,
             lastName: this.userDetailsForm.value!.lastName,
             email: this.userDetailsForm.value!.email,
+            username: username,
         } as UserUpdate;
         this.userService.updateDetails$.next(userUpdate);
     }

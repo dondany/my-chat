@@ -9,7 +9,10 @@
 
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { onDocumentCreated } from 'firebase-functions/v2/firestore';
+import {
+  onDocumentCreated,
+  onDocumentUpdated,
+} from 'firebase-functions/v2/firestore';
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -21,6 +24,13 @@ import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 
 admin.initializeApp();
 // const db = admin.firestore();
+
+export interface Member {
+  uid: string;
+  email: string;
+  imgUrl: string;
+  username: string;
+}
 
 export const userCreated = functions.auth.user().onCreate(async (user) => {
   const uid = user.uid;
@@ -99,3 +109,62 @@ export const messageCreated = onDocumentCreated(
       });
   }
 );
+
+export const userUpdated = onDocumentUpdated('users/{userId}', (event) => {
+  const snapshot = event.data;
+  if (!snapshot) {
+    console.log('No data associated with the event!');
+    return;
+  }
+
+  const userBefore = snapshot.before.data();
+  const userAfter = snapshot.after.data();
+
+  if (
+    userBefore.firstName === userAfter.firstName &&
+    userBefore.lastName == userAfter.lastName
+  ) {
+    return;
+  }
+
+  const userId = event.params.userId;
+
+  if (userAfter.firstName) {
+    let username = userAfter.firstName;
+    if (userAfter.lastName) {
+      username = username + ' ' + userAfter.lastName;
+    }
+    admin
+      .firestore()
+      .collection('conversations')
+      .where('memberIds', 'array-contains', userId)
+      .get()
+      .then((result) => {
+        result.forEach((doc) => {
+          const docData = doc.data();
+          docData.members = docData.members.map((m: Member) => {
+            if (m.uid === userId) {
+              return { ...m, username };
+            } else {
+              return m;
+            }
+          });
+
+          admin
+            .firestore()
+            .collection('conversations')
+            .doc(doc.id)
+            .update(docData)
+            .then((doc) => {})
+            .catch((error) => {
+              console.error('Update failed', error);
+              throw error;
+            });
+        });
+      })
+      .catch((error) => {
+        console.error('Update failed', error);
+        throw error;
+      });
+  }
+});

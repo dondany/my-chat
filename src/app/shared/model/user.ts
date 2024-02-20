@@ -21,8 +21,9 @@ export interface Member {
 }
 
 export interface UserUpdate {
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
+    username?: string;
     email?: string;
     password?: string;
 }
