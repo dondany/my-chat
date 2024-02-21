@@ -1,3 +1,5 @@
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { AsyncPipe } from '@angular/common';
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import {
@@ -7,27 +9,26 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import {
+  MatAutocompleteModule,
+  MatAutocompleteSelectedEvent,
+} from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
+import {
   MatDialogContent,
   MatDialogRef,
   MatDialogTitle,
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { UserService } from '../../shared/data-access/user.service';
-import { MatChipsModule } from '@angular/material/chips';
-import { Member, UserDetails } from '../../shared/model/user';
 import { MatIconModule } from '@angular/material/icon';
-import {
-  MatAutocompleteModule,
-  MatAutocompleteSelectedEvent,
-} from '@angular/material/autocomplete';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatInputModule } from '@angular/material/input';
 import { Observable } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { ConversationService } from '../../shared/data-access/conversation.service';
-import { CreateConversation } from '../../shared/model/conversation';
 import { AuthService } from '../../shared/data-access/auth.service';
+import { ConversationService } from '../../shared/data-access/conversation.service';
+import { UserService } from '../../shared/data-access/user.service';
+import { CreateConversation } from '../../shared/model/conversation';
+import { UserDetails } from '../../shared/model/user';
+import { FindUsersService } from '../../shared/data-access/find-users.service';
 
 @Component({
   standalone: true,
@@ -107,20 +108,23 @@ import { AuthService } from '../../shared/data-access/auth.service';
     AsyncPipe,
     MatButtonModule,
   ],
+  providers: [
+    FindUsersService
+  ]
 })
 export class NewConversationDialogComponent {
-  userService = inject(UserService);
+  findUsersService = inject(FindUsersService);
   conversationService = inject(ConversationService);
   authService = inject(AuthService);
 
   separatorKeyCodes: number[] = [ENTER, COMMA];
   members: UserDetails[] = [];
-  users: Observable<UserDetails[]> = toObservable(this.userService.users);
+  users: Observable<UserDetails[]> = toObservable(this.findUsersService.users);
 
   nameFormControl: FormControl = new FormControl<string>('');
 
   form = new FormGroup({
-    usernameFormControl: this.userService.usernameFromControl,
+    usernameFormControl: this.findUsersService.usernameFromControl,
     nameFormControl: this.nameFormControl,
   });
 
@@ -141,7 +145,7 @@ export class NewConversationDialogComponent {
       this.members.push(event.option.value);
     }
     this.memberInput.nativeElement.value = '';
-    this.userService.usernameFromControl.reset();
+    this.findUsersService.usernameFromControl.reset();
   }
 
   onSubmit() {

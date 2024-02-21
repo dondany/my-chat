@@ -1,20 +1,18 @@
+import {
+  animate,
+  style,
+  transition,
+  trigger
+} from '@angular/animations';
 import { Component, inject } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../shared/data-access/auth.service';
 import { ConversationService } from '../../shared/data-access/conversation.service';
-import { MessageBoxComponent } from './ui/message-box.component';
 import { MessageService } from '../../shared/data-access/message.service';
+import { Conversation } from '../../shared/model/conversation';
 import { AvatarComponent } from '../../shared/ui/avatar-component';
 import { ConversationSettingsComponent } from './ui/conversation-settings.component';
-import { MatIconModule } from '@angular/material/icon';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-} from '@angular/animations';
-import { Conversation } from '../../shared/model/conversation';
-import { AuthService } from '../../shared/data-access/auth.service';
+import { MessageBoxComponent } from './ui/message-box.component';
 
 @Component({
   standalone: true,

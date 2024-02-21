@@ -1,33 +1,33 @@
-import { Component, ElementRef, ViewChild, inject } from '@angular/core';
-import { UserService } from '../../../shared/data-access/user.service';
-import { MatButtonModule } from '@angular/material/button';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { AsyncPipe } from '@angular/common';
-import {
-  MatAutocompleteModule,
-  MatAutocompleteSelectedEvent,
-} from '@angular/material/autocomplete';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import {
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
+import {
+  MatAutocompleteModule,
+  MatAutocompleteSelectedEvent,
+} from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import {
   MatDialogContent,
   MatDialogRef,
   MatDialogTitle,
 } from '@angular/material/dialog';
-import { UserDetails } from '../../../shared/model/user';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { Observable } from 'rxjs';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { ConversationService } from '../../../shared/data-access/conversation.service';
 import { AuthService } from '../../../shared/data-access/auth.service';
+import { ConversationService } from '../../../shared/data-access/conversation.service';
+import { FindUsersService } from '../../../shared/data-access/find-users.service';
 import { Conversation } from '../../../shared/model/conversation';
+import { UserDetails } from '../../../shared/model/user';
 
 @Component({
   standalone: true,
@@ -102,20 +102,23 @@ import { Conversation } from '../../../shared/model/conversation';
     AsyncPipe,
     MatButtonModule,
   ],
+  providers: [
+    FindUsersService
+  ]
 })
 export class AddMembersDialogComponent {
-  userService = inject(UserService);
+  findUsersService = inject(FindUsersService);
   conversationService = inject(ConversationService);
   authService = inject(AuthService);
 
   separatorKeyCodes: number[] = [ENTER, COMMA];
   members: UserDetails[] = [];
-  users: Observable<UserDetails[]> = toObservable(this.userService.users);
+  users: Observable<UserDetails[]> = toObservable(this.findUsersService.users);
 
   nameFormControl: FormControl = new FormControl<string>('');
 
   form = new FormGroup({
-    usernameFormControl: this.userService.usernameFromControl,
+    usernameFormControl: this.findUsersService.usernameFromControl,
     nameFormControl: this.nameFormControl,
   });
 
@@ -136,7 +139,7 @@ export class AddMembersDialogComponent {
       this.members.push(event.option.value);
     }
     this.memberInput.nativeElement.value = '';
-    this.userService.usernameFromControl.reset();
+    this.findUsersService.usernameFromControl.reset();
   }
 
   onSubmit() {

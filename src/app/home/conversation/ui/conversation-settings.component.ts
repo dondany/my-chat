@@ -1,12 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { Conversation } from '../../../shared/model/conversation';
 import { AvatarComponent } from '../../../shared/ui/avatar-component';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog.component';
 import { AddMembersDialogComponent } from './add-members-dialog.component';
-import { MatMenuModule } from '@angular/material/menu';
-import { Member } from '../../../shared/model/user';
 import { ChangeConversationNameDialogComponent } from './change-conversation-name-dialog.component';
 
 @Component({

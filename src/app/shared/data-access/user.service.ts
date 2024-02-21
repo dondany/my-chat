@@ -1,41 +1,24 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
-import { FIRESTORE } from '../../app.config';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { AuthService } from './auth.service';
-import { UserDetails, UserUpdate } from '../model/user';
+import { Injectable, inject, signal } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import {
-  EMPTY,
-  Observable,
-  Subject,
-  catchError,
-  debounceTime,
-  defer,
-  distinctUntilChanged,
-  exhaustMap,
-  filter,
-  forkJoin,
-  ignoreElements,
-  map,
-  of,
-  switchMap,
-  tap,
-} from 'rxjs';
+  doc,
+  updateDoc
+} from 'firebase/firestore';
 import { connect } from 'ngxtension/connect';
 import {
-  collection,
-  doc,
-  limit,
-  orderBy,
-  query,
-  updateDoc,
-  where,
-} from 'firebase/firestore';
-import { collectionData } from 'rxfire/firestore';
-import { FormControl } from '@angular/forms';
+  Subject,
+  catchError,
+  defer,
+  exhaustMap,
+  ignoreElements,
+  of
+} from 'rxjs';
+import { FIRESTORE } from '../../app.config';
+import { UserUpdate } from '../model/user';
+import { AuthService } from './auth.service';
 import { ImageUploadService } from './image-upload.service';
 
-interface UserState {
-  users: UserDetails[];
+export interface UserUpdateState {
   error: string | null;
 }
 
@@ -50,34 +33,19 @@ export class UserService {
   usernameFromControl = new FormControl();
 
   //sources
-  username$ = this.usernameFromControl.valueChanges.pipe(
-    debounceTime(300),
-    distinctUntilChanged()
-  );
   profilePicture$ = new Subject<File>();
   updateDetails$ = new Subject<UserUpdate>();
   updateEmail$ = new Subject<string>();
   updatePassword$ = new Subject<string>();
 
-  //state
-  private state = signal<UserState>({
-    users: [],
-    error: null,
-  });
-
   //selectors
-  users = computed(() => this.state().users);
-  error = computed(() => this.state().error);
+  private state = signal<UserUpdateState>({
+    error: null,
+  })
 
   constructor() {
     //reducers
     connect(this.state)
-      .with(
-        this.username$.pipe(
-          switchMap((username) => this.getUsers(username)),
-          map((users) => ({ users }))
-        )
-      )
       .with(
         this.profilePicture$.pipe(
           exhaustMap((file) => this.updateProfilePicture(file)),
@@ -106,23 +74,6 @@ export class UserService {
           catchError((error) => of({ error }))
         )
       );
-  }
-
-  getUsers(username: string) {
-    if (!username) {
-      return of([]);
-    }
-    const usersCollection = query(
-      collection(this.firestore, 'users'),
-      where('username', '>=', username),
-      where('username', '<=', username + '\uf8ff'),
-      orderBy('username'),
-      limit(50)
-    );
-
-    return collectionData(usersCollection, { idField: 'uid' }) as Observable<
-      UserDetails[]
-    >;
   }
 
   //todo - probably should me moved to ImageUploadService to be able to track the upload progress?
