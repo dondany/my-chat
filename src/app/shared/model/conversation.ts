@@ -1,4 +1,4 @@
-import { Member, UserDetails } from "./user";
+import { Member } from "./user";
 
 export interface Conversation {
     uid: string;

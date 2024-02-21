@@ -1,4 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   User,
   createUserWithEmailAndPassword,
@@ -7,27 +8,24 @@ import {
   updateEmail,
   updatePassword
 } from 'firebase/auth';
-import { authState } from 'rxfire/auth';
-import { AUTH, FIRESTORE } from '../../app.config';
-import { connect } from 'ngxtension/connect';
-import { Credentials } from '../model/credentials';
-import {
-  from,
-  defer,
-  map,
-  Observable,
-  switchMap,
-  tap,
-  filter,
-  EMPTY,
-  of,
-  pairwise,
-  Subject,
-} from 'rxjs';
-import { UserDetails } from '../model/user';
-import { docData } from 'rxfire/firestore';
 import { doc } from 'firebase/firestore';
-import { Router } from '@angular/router';
+import { connect } from 'ngxtension/connect';
+import { authState } from 'rxfire/auth';
+import { docData } from 'rxfire/firestore';
+import {
+  EMPTY,
+  Observable,
+  Subject,
+  defer,
+  from,
+  map,
+  of,
+  switchMap,
+  tap
+} from 'rxjs';
+import { AUTH, FIRESTORE } from '../../app.config';
+import { Credentials } from '../model/credentials';
+import { UserDetails } from '../model/user';
 
 export type AuthUser = User | null | undefined;
 

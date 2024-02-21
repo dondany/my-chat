@@ -1,4 +1,5 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MatDialogContent,
@@ -7,11 +8,9 @@ import {
 } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { UserDetails } from '../../shared/model/user';
 import { AuthService } from '../../shared/data-access/auth.service';
 import { UserService } from '../../shared/data-access/user.service';
 import { ProfileFormService } from '../data-access/profile-form.service';
-import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   standalone: true,

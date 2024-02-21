@@ -2,10 +2,8 @@ import { Injectable, inject } from "@angular/core";
 import { FormBuilder, FormControl, FormGroupDirective, Validators } from "@angular/forms";
 import { AuthService } from "../../shared/data-access/auth.service";
 import { UserService } from "../../shared/data-access/user.service";
-import { Subject } from "rxjs";
 import { UserUpdate } from "../../shared/model/user";
 import { confirmPasswordValidator } from "../../shared/validators/confirm-password.validator";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Injectable()
 export class ProfileFormService {

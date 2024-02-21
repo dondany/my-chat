@@ -1,7 +1,14 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { FIRESTORE } from '../../app.config';
-import { Message, MessageDetails } from '../model/message';
+import { toObservable } from '@angular/core/rxjs-interop';
+import {
+  addDoc,
+  collection,
+  limit,
+  orderBy,
+  query
+} from 'firebase/firestore';
 import { connect } from 'ngxtension/connect';
+import { collectionData } from 'rxfire/firestore';
 import {
   Observable,
   Subject,
@@ -14,20 +21,12 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import {
-  addDoc,
-  collection,
-  doc,
-  limit,
-  orderBy,
-  query,
-} from 'firebase/firestore';
-import { collectionData } from 'rxfire/firestore';
-import { AuthService } from './auth.service';
+import { FIRESTORE } from '../../app.config';
 import { Conversation } from '../model/conversation';
-import { ConversationService } from './conversation.service';
-import { toObservable } from '@angular/core/rxjs-interop';
 import { LatestMessage } from '../model/latest-message';
+import { Message, MessageDetails } from '../model/message';
+import { AuthService } from './auth.service';
+import { ConversationService } from './conversation.service';
 import { LatestMessageService } from './latest-message.service';
 
 interface MessageState {

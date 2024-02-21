@@ -25,10 +25,9 @@ import { MatInputModule } from '@angular/material/input';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../shared/data-access/auth.service';
 import { ConversationService } from '../../shared/data-access/conversation.service';
-import { UserService } from '../../shared/data-access/user.service';
+import { FindUsersService } from '../../shared/data-access/find-users.service';
 import { CreateConversation } from '../../shared/model/conversation';
 import { UserDetails } from '../../shared/model/user';
-import { FindUsersService } from '../../shared/data-access/find-users.service';
 
 @Component({
   standalone: true,

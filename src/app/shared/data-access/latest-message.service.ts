@@ -1,34 +1,29 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { FIRESTORE } from '../../app.config';
-import { AuthService } from './auth.service';
-import { LatestMessage } from '../model/latest-message';
-import { ConversationService } from './conversation.service';
 import { toObservable } from '@angular/core/rxjs-interop';
+import {
+  collection,
+  doc,
+  query,
+  setDoc,
+  where
+} from 'firebase/firestore';
 import { connect } from 'ngxtension/connect';
+import { collectionData } from 'rxfire/firestore';
 import {
   Observable,
   Subject,
   catchError,
   defer,
-  exhaustAll,
   exhaustMap,
   filter,
   ignoreElements,
   map,
   of,
-  switchMap,
-  tap,
+  switchMap
 } from 'rxjs';
-import {
-  addDoc,
-  collection,
-  doc,
-  query,
-  setDoc,
-  updateDoc,
-  where,
-} from 'firebase/firestore';
-import { collectionData } from 'rxfire/firestore';
+import { FIRESTORE } from '../../app.config';
+import { LatestMessage } from '../model/latest-message';
+import { AuthService } from './auth.service';
 
 interface LatestMessageState {
   latestMessages: LatestMessage[];

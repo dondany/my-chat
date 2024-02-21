@@ -1,9 +1,9 @@
 import { Injectable, inject } from "@angular/core";
 
 import { ref } from 'firebase/storage';
-import { STORAGE } from "../../app.config";
 import { getDownloadURL, uploadBytesResumable } from "rxfire/storage";
-import { exhaustMap, filter, switchMap, tap } from "rxjs";
+import { exhaustMap, filter } from "rxjs";
+import { STORAGE } from "../../app.config";
 
 @Injectable({
     providedIn: 'root',

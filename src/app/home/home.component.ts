@@ -1,16 +1,16 @@
-import { Component, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule, RouterOutlet } from '@angular/router';
-import { ConversationService } from '../shared/data-access/conversation.service';
-import { LoginService } from '../auth/login/data-access/login.service';
-import { ConversationList } from './ui/conversation-list.component';
-import { MessageBoxComponent } from './conversation/ui/message-box.component';
-import { AvatarComponent } from '../shared/ui/avatar-component';
-import { AuthService } from '../shared/data-access/auth.service';
+import { Component, effect, inject } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { LoginService } from '../auth/login/data-access/login.service';
+import { AuthService } from '../shared/data-access/auth.service';
+import { ConversationService } from '../shared/data-access/conversation.service';
+import { AvatarComponent } from '../shared/ui/avatar-component';
+import { MessageBoxComponent } from './conversation/ui/message-box.component';
+import { ConversationList } from './ui/conversation-list.component';
 import { EditProfileDialogComponent } from './ui/edit-profile-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   standalone: true,

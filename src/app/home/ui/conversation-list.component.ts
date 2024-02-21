@@ -1,12 +1,12 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
-import { Conversation } from '../../shared/model/conversation';
-import { MatIconModule } from '@angular/material/icon';
-import { NewConversationDialogComponent } from './new-conversation-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import { AvatarComponent } from '../../shared/ui/avatar-component';
-import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
-import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterModule } from '@angular/router';
+import { Conversation } from '../../shared/model/conversation';
+import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
+import { AvatarComponent } from '../../shared/ui/avatar-component';
+import { NewConversationDialogComponent } from './new-conversation-dialog.component';
 
 @Component({
   standalone: true,

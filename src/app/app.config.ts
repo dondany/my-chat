@@ -1,17 +1,17 @@
 import { ApplicationConfig, InjectionToken, importProvidersFrom } from '@angular/core';
+import { FirebaseStorage, connectStorageEmulator, getStorage, provideStorage } from '@angular/fire/storage';
 import { provideRouter } from '@angular/router';
-import { initializeApp } from 'firebase/app'
-import { connectAuthEmulator, getAuth } from 'firebase/auth'
+import { initializeApp } from 'firebase/app';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { Firestore, connectFirestoreEmulator, getFirestore, initializeFirestore } from 'firebase/firestore';
-import { FirebaseStorage, connectStorageEmulator, getStorage, provideStorage} from '@angular/fire/storage'
 
-import { routes } from './app.routes';
+import { provideFirebaseApp } from '@angular/fire/app';
+import { provideAuth } from '@angular/fire/auth';
+import { provideFirestore } from '@angular/fire/firestore';
+import { getFunctions, provideFunctions } from '@angular/fire/functions';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { environment } from '../environments/environment';
-import { initializeApp as initializeApp_alias, provideFirebaseApp } from '@angular/fire/app';
-import { getAuth as getAuth_alias, provideAuth } from '@angular/fire/auth';
-import { getFirestore as getFirestore_alias, provideFirestore } from '@angular/fire/firestore';
-import { getFunctions, provideFunctions } from '@angular/fire/functions';
+import { routes } from './app.routes';
 
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 
