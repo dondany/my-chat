@@ -15,11 +15,7 @@ import { NewConversationDialogComponent } from './new-conversation-dialog.compon
     <div
       class="px-6 py-4 h-14 flex justify-between items-center fill-none border-b"
     >
-      <span
-        class="text-3xl text-indigo-600 font-['Pacifico'] cursor-pointer"
-        routerLink="/home"
-        >Chats</span
-      >
+      <span class="cursor-pointer" routerLink="/home">New Conversation</span>
       <div
         (click)="openDialog()"
         class="flex justify-center items-center p-2 rounded-full cursor-pointer hover:bg-gray-100"
@@ -30,20 +26,22 @@ import { NewConversationDialogComponent } from './new-conversation-dialog.compon
 
     <ul class="p-2">
       @for (conversation of conversations; track $index) {
-      <li
-        (click)="conversationEmitter.emit(conversation)"
-        class="flex gap-3 items-center px-4 py-2 rounded cursor-pointer hover:bg-gray-100"
-      >
-        <app-avatar [imgUrls]="conversation.imgUrls!"></app-avatar>
-        <div class="flex flex-col">
-          <span class="text-sm font-medium">{{ conversation.name }}</span>
-          <span
-            class="text-gray-400 text-xs"
-            [ngClass]="{'font-semibold text-gray-700': conversation.newMessage}"
-            >{{ conversation.latestMessage | truncate : 25 }}</span
-          >
-        </div>
-      </li>
+        <li
+          (click)="conversationEmitter.emit(conversation)"
+          class="flex gap-3 items-center px-4 py-2 rounded cursor-pointer hover:bg-gray-100"
+        >
+          <app-avatar [imgUrls]="conversation.imgUrls!"></app-avatar>
+          <div class="flex flex-col">
+            <span class="text-sm font-medium">{{ conversation.name }}</span>
+            <span
+              class="text-gray-400 text-xs"
+              [ngClass]="{
+                'font-semibold text-gray-700': conversation.newMessage
+              }"
+              >{{ conversation.latestMessage | truncate: 25 }}</span
+            >
+          </div>
+        </li>
       }
     </ul>
   `,

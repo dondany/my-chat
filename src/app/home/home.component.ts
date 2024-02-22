@@ -18,41 +18,44 @@ import { EditProfileDialogComponent } from './ui/edit-profile-dialog.component';
   template: `
     <div class="flex h-screen w-full">
       <div class="w-[360px] border-r flex flex-col">
+        <div class="flex justify-center m-8 p-6 rounded-lg h-48 bg-indigo-50">
+          <div class="flex flex-col items-center">
+            <button [matMenuTriggerFor]="userMenu">
+              <app-avatar
+                [imgUrls]="[authService.userDetails()?.imgUrl!]"
+                size="xl"
+              />
+            </button>
+            <mat-menu #userMenu="matMenu">
+              <button mat-menu-item (click)="openEditProfileDialog()">
+                <mat-icon class="material-icons-outlined font-thin scale-75">
+                  edit
+                </mat-icon>
+                <span>Edit profile</span>
+              </button>
+              <button mat-menu-item (click)="authService.logout()">
+                <mat-icon class="material-icons-outlined font-thin scale-75">
+                  logout
+                </mat-icon>
+                <span>Log out</span>
+              </button>
+            </mat-menu>
+            <span class="font-medium">
+              {{ authService.userDetails()?.firstName }}
+              {{ authService.userDetails()?.lastName }}
+            </span>
+            <span class="text-gray-700">
+              {{ authService.userDetails()?.email }}
+            </span>
+          </div>
+        </div>
+
         <app-conversation-list
           [conversations]="conversationService.conversations()"
           (conversation)="
             conversationService.currentConversation$.next($event.uid)
           "
         />
-
-        <div class="mt-auto flex gap-3 justify-start items-center p-4 border-t">
-          <button [matMenuTriggerFor]="userMenu">
-            <app-avatar [imgUrls]="[authService.userDetails()?.imgUrl!]">
-            </app-avatar>
-          </button>
-          <mat-menu #userMenu="matMenu">
-            <button mat-menu-item (click)="openEditProfileDialog()">
-              <mat-icon class="material-icons-outlined font-thin scale-75">
-                edit
-              </mat-icon>
-              <span>Edit profile</span>
-            </button>
-            <button mat-menu-item (click)="authService.logout()">
-              <mat-icon class="material-icons-outlined font-thin scale-75">
-                logout
-              </mat-icon>
-              <span>Log out</span>
-            </button>
-          </mat-menu>
-          <div class="flex flex-col">
-            <span class="font-medium">
-              {{ authService.userDetails()?.username }}
-            </span>
-            <span class="text-xs text-gray-500">
-              {{ authService.userDetails()?.email }}
-            </span>
-          </div>
-        </div>
       </div>
 
       <div class="w-full h-full">
@@ -69,7 +72,7 @@ import { EditProfileDialogComponent } from './ui/edit-profile-dialog.component';
     AvatarComponent,
     MatIconModule,
     MatMenuModule,
-    RouterModule
+    RouterModule,
   ],
 })
 export default class HomeComponent {
@@ -98,7 +101,6 @@ export default class HomeComponent {
   }
 
   openEditProfileDialog(): void {
-    const dialogRef = this.dialog.open(EditProfileDialogComponent, {
-    });
+    const dialogRef = this.dialog.open(EditProfileDialogComponent, {});
   }
 }
