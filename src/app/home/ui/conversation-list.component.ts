@@ -12,23 +12,21 @@ import { NewConversationDialogComponent } from './new-conversation-dialog.compon
   standalone: true,
   selector: 'app-conversation-list',
   template: `
-    <div
-      class="px-6 py-4 h-14 flex justify-between items-center fill-none border-b"
-    >
-      <span class="cursor-pointer" routerLink="/home">New Conversation</span>
+    <div class="px-6 h-14 flex justify-between items-center fill-none">
       <div
         (click)="openDialog()"
-        class="flex justify-center items-center p-2 rounded-full cursor-pointer hover:bg-gray-100"
+        class="flex justify-center items-center py-2 px-4 rounded-full cursor-pointer hover:bg-indigo-50"
       >
+        <span class="cursor-pointer" routerLink="/home">New Conversation</span>
         <mat-icon class="material-symbols-outlined">add</mat-icon>
       </div>
     </div>
 
-    <ul class="p-2">
+    <ul class="py-2 px-8">
       @for (conversation of conversations; track $index) {
         <li
           (click)="conversationEmitter.emit(conversation)"
-          class="flex gap-3 items-center px-4 py-2 rounded cursor-pointer hover:bg-gray-100"
+          class="flex gap-3 items-center px-4 py-2 rounded-xl cursor-pointer hover:bg-indigo-50"
         >
           <app-avatar [imgUrls]="conversation.imgUrls!"></app-avatar>
           <div class="flex flex-col">

@@ -1,9 +1,4 @@
-import {
-  animate,
-  style,
-  transition,
-  trigger
-} from '@angular/animations';
+import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../shared/data-access/auth.service';
@@ -18,9 +13,9 @@ import { MessageBoxComponent } from './ui/message-box.component';
   standalone: true,
   selector: 'app-conversation',
   template: `
-    <div class="flex h-full">
-      <div class="flex flex-col w-full">
-        <header class="flex items-center gap-3 p-3 border-b h-14">
+    <div class="flex py-8 h-full">
+      <div class="flex flex-col w-full mr-8 rounded-lg bg-indigo-50">
+        <header class="flex items-center gap-3 p-3 h-14">
           <app-avatar
             [imgUrls]="conversationService.currentConversation()?.imgUrls!"
           ></app-avatar>
@@ -31,7 +26,7 @@ import { MessageBoxComponent } from './ui/message-box.component';
           </div>
           <button
             (click)="showSettings = !showSettings"
-            class="ml-auto flex items-center justify-center p-1 rounded-full cursor-pointer hover:bg-gray-200"
+            class="ml-auto flex items-center justify-center p-1 rounded-full cursor-pointer hover:bg-white/70"
           >
             <mat-icon class="material-icons-outlined font-thin scale-75"
               >more_horiz</mat-icon
@@ -41,18 +36,18 @@ import { MessageBoxComponent } from './ui/message-box.component';
         <app-message-box
           [messages]="messageService.messages()"
           (message)="messageService.add$.next($event)"
-          class="grow flex"
+          class="h-full"
         />
       </div>
       @if (showSettings) {
-      <app-conversation-settings
-        [conversation]="conversationService.currentConversation()!"
-        [admin]="isAdmin()"
-        [@inOutAnimation]
-        (removeMember)="removeMember($event)"
-        (toggleAdmin)="grantAdmin($event)"
-        (changeConversationName)="changeConversationName($event)"
-      ></app-conversation-settings>
+        <app-conversation-settings
+          [conversation]="conversationService.currentConversation()!"
+          [admin]="isAdmin()"
+          [@inOutAnimation]
+          (removeMember)="removeMember($event)"
+          (toggleAdmin)="grantAdmin($event)"
+          (changeConversationName)="changeConversationName($event)"
+        ></app-conversation-settings>
       }
     </div>
   `,
@@ -87,10 +82,10 @@ export default class ConversationComponent {
       ...this.conversationService.currentConversation(),
     } as Conversation;
     conversation.memberIds = conversation.memberIds?.filter(
-      (id) => id !== event
+      (id) => id !== event,
     );
     conversation.members = conversation.members?.filter(
-      (member) => member.uid !== event
+      (member) => member.uid !== event,
     );
 
     this.conversationService.update$.next(conversation);
@@ -109,7 +104,7 @@ export default class ConversationComponent {
     let conversation = {
       ...this.conversationService.currentConversation(),
     } as Conversation;
-    const member = conversation.members?.find(m => m.uid == event);
+    const member = conversation.members?.find((m) => m.uid == event);
     if (member) {
       member.admin = !member.admin;
     }
@@ -119,7 +114,7 @@ export default class ConversationComponent {
   changeConversationName(event: string) {
     let conversation = {
       ...this.conversationService.currentConversation(),
-      name: event
+      name: event,
     } as Conversation;
     this.conversationService.update$.next(conversation);
   }

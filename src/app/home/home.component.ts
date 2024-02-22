@@ -17,8 +17,10 @@ import { EditProfileDialogComponent } from './ui/edit-profile-dialog.component';
   selector: 'app-home',
   template: `
     <div class="flex h-screen w-full">
-      <div class="w-[360px] border-r flex flex-col">
-        <div class="flex justify-center m-8 p-6 rounded-lg h-48 bg-indigo-50">
+      <div class="w-[360px] flex flex-col">
+        <div
+          class="flex justify-center m-8 mb-0 p-6 rounded-lg h-48 bg-indigo-50"
+        >
           <div class="flex flex-col items-center">
             <button [matMenuTriggerFor]="userMenu">
               <app-avatar
@@ -58,7 +60,7 @@ import { EditProfileDialogComponent } from './ui/edit-profile-dialog.component';
         />
       </div>
 
-      <div class="w-full h-full">
+      <div class="w-full">
         <router-outlet></router-outlet>
       </div>
     </div>
