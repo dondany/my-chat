@@ -36,38 +36,33 @@ import { UserDetails } from '../../shared/model/user';
     <div class="w-[640px]">
       <h1 mat-dialog-title>Create new conversation</h1>
       <form
-        [formGroup]="form"
+        [formGroup]="findUsersService.form"
         (submit)="onSubmit()"
         mat-dialog-content
         class="w-full"
       >
         <mat-form-field class="w-full">
-          <mat-label>Name</mat-label>
-          <input matInput type="text" formControlName="nameFormControl" />
-        </mat-form-field>
-
-        <mat-form-field class="w-full">
           <mat-label>Members</mat-label>
           <mat-chip-grid #chipGrid aria-lable="Members">
             @for (user of members; track user) {
-            <mat-chip-row (removed)="remove(user)" class="bg-white">
-              <div class="flex justify-center items-center gap-2">
-                <img [src]="user.imgUrl" class="w-6 h6 rounded-full" />
-                {{ user.username }}
-              </div>
-              <button
-                matChipRemove
-                [attr.aria-label]="'remove ' + user.username"
-              >
-                <mat-icon>cancel</mat-icon>
-              </button>
-            </mat-chip-row>
+              <mat-chip-row (removed)="remove(user)" class="bg-white">
+                <div class="flex justify-center items-center gap-2">
+                  <img [src]="user.imgUrl" class="w-6 h6 rounded-full" />
+                  {{ user.username }}
+                </div>
+                <button
+                  matChipRemove
+                  [attr.aria-label]="'remove ' + user.username"
+                >
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
             }
           </mat-chip-grid>
           <input
             placeholder="Add member..."
             #memberInput
-            formControlName="usernameFormControl"
+            formControlName="username"
             [matChipInputFor]="chipGrid"
             [matAutocomplete]="auto"
             [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
@@ -77,12 +72,12 @@ import { UserDetails } from '../../shared/model/user';
             (optionSelected)="selected($event)"
           >
             @for (user of users | async; track $index) {
-            <mat-option [value]="user">
-              <div class="flex justify-center items-center gap-2">
-                <img [src]="user.imgUrl" class="w-8 h8 rounded-full" />
-                {{ user.username }}
-              </div>
-            </mat-option>
+              <mat-option [value]="user">
+                <div class="flex justify-center items-center gap-2">
+                  <img [src]="user.imgUrl" class="w-8 h8 rounded-full" />
+                  {{ user.username }}
+                </div>
+              </mat-option>
             }
           </mat-autocomplete>
         </mat-form-field>
@@ -107,9 +102,7 @@ import { UserDetails } from '../../shared/model/user';
     AsyncPipe,
     MatButtonModule,
   ],
-  providers: [
-    FindUsersService
-  ]
+  providers: [FindUsersService],
 })
 export class NewConversationDialogComponent {
   findUsersService = inject(FindUsersService);
@@ -119,13 +112,6 @@ export class NewConversationDialogComponent {
   separatorKeyCodes: number[] = [ENTER, COMMA];
   members: UserDetails[] = [];
   users: Observable<UserDetails[]> = toObservable(this.findUsersService.users);
-
-  nameFormControl: FormControl = new FormControl<string>('');
-
-  form = new FormGroup({
-    usernameFormControl: this.findUsersService.usernameFromControl,
-    nameFormControl: this.nameFormControl,
-  });
 
   @ViewChild('memberInput') memberInput!: ElementRef<HTMLInputElement>;
 
@@ -144,21 +130,21 @@ export class NewConversationDialogComponent {
       this.members.push(event.option.value);
     }
     this.memberInput.nativeElement.value = '';
-    this.findUsersService.usernameFromControl.reset();
+    this.findUsersService.username.reset();
   }
 
   onSubmit() {
     const memberUids = this.members.map((member) => member.uid);
     const newConversation: CreateConversation = {
-      name: this.nameFormControl.getRawValue(),
+      name: this.findUsersService.username.getRawValue(),
       type: this.members.length < 2 ? 'PRIVATE' : 'GROUP',
       memberIds: [...memberUids, this.authService.user()!.uid],
-
       members: [
         ...this.members,
         { ...this.authService.userDetails()!, admin: true },
       ],
     };
+    console.log(newConversation);
     this.conversationService.add$.next(newConversation);
     this.dialogRef.close();
   }

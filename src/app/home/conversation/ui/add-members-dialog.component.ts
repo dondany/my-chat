@@ -36,7 +36,7 @@ import { UserDetails } from '../../../shared/model/user';
     <div class="w-[640px]">
       <h1 mat-dialog-title>Add members</h1>
       <form
-        [formGroup]="form"
+        [formGroup]="findUsersService.form"
         (submit)="onSubmit()"
         mat-dialog-content
         class="w-full"
@@ -45,24 +45,24 @@ import { UserDetails } from '../../../shared/model/user';
           <mat-label>Members</mat-label>
           <mat-chip-grid #chipGrid aria-lable="Members">
             @for (user of members; track user) {
-            <mat-chip-row (removed)="remove(user)" class="bg-white">
-              <div class="flex justify-center items-center gap-2">
-                <img [src]="user.imgUrl" class="w-6 h6 rounded-full" />
-                {{ user.username }}
-              </div>
-              <button
-                matChipRemove
-                [attr.aria-label]="'remove ' + user.username"
-              >
-                <mat-icon>cancel</mat-icon>
-              </button>
-            </mat-chip-row>
+              <mat-chip-row (removed)="remove(user)" class="bg-white">
+                <div class="flex justify-center items-center gap-2">
+                  <img [src]="user.imgUrl" class="w-6 h6 rounded-full" />
+                  {{ user.username }}
+                </div>
+                <button
+                  matChipRemove
+                  [attr.aria-label]="'remove ' + user.username"
+                >
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
             }
           </mat-chip-grid>
           <input
             placeholder="Add member..."
             #memberInput
-            formControlName="usernameFormControl"
+            formControlName="username"
             [matChipInputFor]="chipGrid"
             [matAutocomplete]="auto"
             [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
@@ -72,12 +72,12 @@ import { UserDetails } from '../../../shared/model/user';
             (optionSelected)="selected($event)"
           >
             @for (user of users | async; track $index) {
-            <mat-option [value]="user">
-              <div class="flex justify-center items-center gap-2">
-                <img [src]="user.imgUrl" class="w-8 h8 rounded-full" />
-                {{ user.username }}
-              </div>
-            </mat-option>
+              <mat-option [value]="user">
+                <div class="flex justify-center items-center gap-2">
+                  <img [src]="user.imgUrl" class="w-8 h8 rounded-full" />
+                  {{ user.username }}
+                </div>
+              </mat-option>
             }
           </mat-autocomplete>
         </mat-form-field>
@@ -102,9 +102,7 @@ import { UserDetails } from '../../../shared/model/user';
     AsyncPipe,
     MatButtonModule,
   ],
-  providers: [
-    FindUsersService
-  ]
+  providers: [FindUsersService],
 })
 export class AddMembersDialogComponent {
   findUsersService = inject(FindUsersService);
@@ -114,13 +112,6 @@ export class AddMembersDialogComponent {
   separatorKeyCodes: number[] = [ENTER, COMMA];
   members: UserDetails[] = [];
   users: Observable<UserDetails[]> = toObservable(this.findUsersService.users);
-
-  nameFormControl: FormControl = new FormControl<string>('');
-
-  form = new FormGroup({
-    usernameFormControl: this.findUsersService.usernameFromControl,
-    nameFormControl: this.nameFormControl,
-  });
 
   @ViewChild('memberInput') memberInput!: ElementRef<HTMLInputElement>;
 
@@ -139,7 +130,7 @@ export class AddMembersDialogComponent {
       this.members.push(event.option.value);
     }
     this.memberInput.nativeElement.value = '';
-    this.findUsersService.usernameFromControl.reset();
+    this.findUsersService.username.reset();
   }
 
   onSubmit() {
@@ -148,13 +139,13 @@ export class AddMembersDialogComponent {
       .concat(this.conversationService.currentConversation()?.memberIds!);
 
     const allMembers = this.members.concat(
-      this.conversationService.currentConversation()?.members!
+      this.conversationService.currentConversation()?.members!,
     );
 
     const conversation: Conversation = {
       ...this.conversationService.currentConversation(),
       memberIds: allMemberIds,
-      members: allMembers
+      members: allMembers,
     } as Conversation;
 
     this.conversationService.update$.next(conversation);

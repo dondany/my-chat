@@ -21,7 +21,8 @@ import {
   ignoreElements,
   map,
   of,
-  switchMap
+  switchMap,
+  tap,
 } from 'rxjs';
 import { FIRESTORE } from '../../app.config';
 import { Conversation, CreateConversation } from '../model/conversation';
@@ -45,13 +46,13 @@ export class ConversationService {
 
   private authUser$ = toObservable(this.authService.user);
   private latestMessages$ = toObservable(
-    this.latestMessageService.latestMessages
+    this.latestMessageService.latestMessages,
   );
 
   //sources
   conversations$ = this.authUser$.pipe(
     filter((user) => !!user),
-    switchMap((user) => this.getConversations(user!.uid))
+    switchMap((user) => this.getConversations(user!.uid)),
   );
   currentConversation$ = new Subject<string>();
   add$ = new Subject<CreateConversation>();
@@ -71,24 +72,29 @@ export class ConversationService {
   constructor() {
     //reducers
     connect(this.state)
-      .with(combineLatest([this.conversations$, this.latestMessages$]).pipe(
-        map(([conversations, latestMessages]) => {
-          return conversations.map((conversation : Conversation) => {
-            const latestMessage = latestMessages
-            .filter((lm) => lm.conversationUid !== this.currentConversation()?.uid)
-            .filter((lm) => lm.conversationUid === conversation.uid)
-            .find((lm) => lm.messageUid !== conversation.latestMessageUid);
+      .with(
+        combineLatest([this.conversations$, this.latestMessages$]).pipe(
+          map(([conversations, latestMessages]) => {
+            return conversations.map((conversation: Conversation) => {
+              const latestMessage = latestMessages
+                .filter(
+                  (lm) =>
+                    lm.conversationUid !== this.currentConversation()?.uid,
+                )
+                .filter((lm) => lm.conversationUid === conversation.uid)
+                .find((lm) => lm.messageUid !== conversation.latestMessageUid);
 
-            return {
-              ...conversation,
-              imgUrls: this.getImgUrls(conversation),
-              name: this.getName(conversation),
-              newMessage: latestMessage
-            } as Conversation;
-          })
-        }),
-        map((conversations) => ({ conversations }))
-        )
+              return {
+                ...conversation,
+                imgUrls: this.getImgUrls(conversation),
+                name: this.getName(conversation),
+                newMessage: latestMessage,
+              } as Conversation;
+            });
+          }),
+          tap((c) => console.log(c)),
+          map((conversations) => ({ conversations })),
+        ),
       )
       .with(
         this.currentConversation$.pipe(
@@ -98,29 +104,29 @@ export class ConversationService {
             imgUrls: this.getImgUrls(conversation),
             name: this.getName(conversation),
           })),
-          map((currentConversation) => ({ currentConversation }))
-        )
+          map((currentConversation) => ({ currentConversation })),
+        ),
       )
       .with(
         this.add$.pipe(
           exhaustMap((conversation) => this.createConversation(conversation)),
           ignoreElements(),
-          catchError((error) => of({ error }))
-        )
+          catchError((error) => of({ error })),
+        ),
       )
       .with(
         this.update$.pipe(
           exhaustMap((conversation) => this.updateConversation(conversation)),
           ignoreElements(),
-          catchError((error) => of({ error }))
-        )
+          catchError((error) => of({ error })),
+        ),
       );
   }
 
   getConversations(userUid: string) {
     const conversationsCollection = query(
       collection(this.firestore, 'conversations'),
-      where('memberIds', 'array-contains', userUid)
+      where('memberIds', 'array-contains', userUid),
     );
 
     return collectionData(conversationsCollection, {
@@ -132,7 +138,7 @@ export class ConversationService {
     const conversationDoc = doc(
       this.firestore,
       'conversations',
-      conversationUid
+      conversationUid,
     );
     return docData(conversationDoc, {
       idField: 'uid',
@@ -152,7 +158,7 @@ export class ConversationService {
   }
 
   getName(conversation: Conversation) {
-    if (conversation.name || conversation.name !== '') {
+    if (conversation.name !== null && conversation.name !== '') {
       return conversation.name;
     }
 
@@ -176,22 +182,19 @@ export class ConversationService {
   updateConversation(conversation: Conversation) {
     const conversationDoc = doc(
       this.firestore,
-      `conversations/${conversation.uid}`
+      `conversations/${conversation.uid}`,
     );
     return defer(() =>
       updateDoc(conversationDoc, {
         memberIds: conversation.memberIds,
         members: conversation.members,
         name: conversation.name,
-      })
+      }),
     );
   }
 
   isNewMessage(latestMessage: LatestMessage, latestMessageUid: string) {
-    if (
-      !latestMessage ||
-      latestMessage.messageUid !== latestMessageUid
-    ) {
+    if (!latestMessage || latestMessage.messageUid !== latestMessageUid) {
       return true;
     }
     return false;

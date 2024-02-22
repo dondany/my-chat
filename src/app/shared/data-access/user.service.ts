@@ -1,9 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import {
-  doc,
-  updateDoc
-} from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { connect } from 'ngxtension/connect';
 import {
   Subject,
@@ -11,7 +8,7 @@ import {
   defer,
   exhaustMap,
   ignoreElements,
-  of
+  of,
 } from 'rxjs';
 import { FIRESTORE } from '../../app.config';
 import { UserUpdate } from '../model/user';
@@ -41,7 +38,7 @@ export class UserService {
   //selectors
   private state = signal<UserUpdateState>({
     error: null,
-  })
+  });
 
   constructor() {
     //reducers
@@ -50,29 +47,29 @@ export class UserService {
         this.profilePicture$.pipe(
           exhaustMap((file) => this.updateProfilePicture(file)),
           ignoreElements(),
-          catchError((error) => of({ error }))
-        )
+          catchError((error) => of({ error })),
+        ),
       )
       .with(
         this.updateDetails$.pipe(
           exhaustMap((userUpdate) => this.update(userUpdate)),
           ignoreElements(),
-          catchError((error) => of({ error }))
-        )
+          catchError((error) => of({ error })),
+        ),
       )
       .with(
         this.updateEmail$.pipe(
           exhaustMap((email) => this.updateEmail(email)),
           ignoreElements(),
-          catchError((error) => of({ error }))
-        )
+          catchError((error) => of({ error })),
+        ),
       )
       .with(
         this.updatePassword$.pipe(
           exhaustMap((password) => this.updatePassword(password)),
           ignoreElements(),
-          catchError((error) => of({ error }))
-        )
+          catchError((error) => of({ error })),
+        ),
       );
   }
 
@@ -82,17 +79,17 @@ export class UserService {
       exhaustMap((imgUrl) => {
         const userDoc = doc(
           this.firestore,
-          `users/${this.authService.userDetails()!.uid}`
+          `users/${this.authService.userDetails()!.uid}`,
         );
         return defer(() => updateDoc(userDoc, { imgUrl }));
-      })
+      }),
     );
   }
 
   private update(userUpdate: UserUpdate) {
     const userDoc = doc(
       this.firestore,
-      `users/${this.authService.userDetails()!.uid}`
+      `users/${this.authService.userDetails()!.uid}`,
     );
     return defer(() => updateDoc(userDoc, { ...userUpdate }));
   }

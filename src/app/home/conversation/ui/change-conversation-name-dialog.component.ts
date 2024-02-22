@@ -39,7 +39,11 @@ import {
       >
         <mat-form-field class="w-full">
           <mat-label>Name</mat-label>
-          <input matInput placeholder="Enter name..." formControlName="nameFormControl" />
+          <input
+            matInput
+            placeholder="Enter name..."
+            formControlName="nameFormControl"
+          />
         </mat-form-field>
         <div class="flex justify-end">
           <button mat-raised-button type="Submit" color="primary">
@@ -61,7 +65,6 @@ import {
     MatAutocompleteModule,
     AsyncPipe,
     MatButtonModule,
-    
   ],
 })
 export class ChangeConversationNameDialogComponent {
@@ -72,9 +75,8 @@ export class ChangeConversationNameDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<ChangeConversationNameDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { name: string }
+    @Inject(MAT_DIALOG_DATA) public data: { name: string },
   ) {}
-
 
   onSubmit() {
     this.dialogRef.close({ data: this.nameFormControl.getRawValue() });
