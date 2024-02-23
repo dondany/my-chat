@@ -17,9 +17,9 @@ import { EditProfileDialogComponent } from './ui/edit-profile-dialog.component';
   selector: 'app-home',
   template: `
     <div class="flex h-screen w-full">
-      <div class="w-[360px] flex flex-col">
+      <div class="w-[360px] flex flex-col gap-3">
         <div
-          class="flex justify-center m-8 mb-0 p-6 rounded-lg h-48 bg-indigo-50"
+          class="flex justify-center m-8 mb-0 p-6 rounded-lg h-48 bg-indigo-50 shadow-md"
         >
           <div class="flex flex-col items-center">
             <button [matMenuTriggerFor]="userMenu">
@@ -60,8 +60,12 @@ import { EditProfileDialogComponent } from './ui/edit-profile-dialog.component';
         />
       </div>
 
-      <div class="w-full">
-        <router-outlet></router-outlet>
+      <div class="w-full h-full">
+        <div class="flex py-8 h-full">
+          <div class="flex flex-col w-full h-full">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
       </div>
     </div>
   `,

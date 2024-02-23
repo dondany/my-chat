@@ -14,7 +14,7 @@ import { ChangeConversationNameDialogComponent } from './change-conversation-nam
   template: `
     <div class="pr-8">
       <div
-        class="w-60 h-full flex flex-col items-center p-2 rounded-xl bg-indigo-50"
+        class="w-60 h-full flex flex-col items-center p-2 rounded-xl bg-indigo-50 shadow-md"
       >
         <div class="flex flex-col gap-3 items-center mt-12">
           <app-avatar

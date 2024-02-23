@@ -1,14 +1,18 @@
-import { Route } from '@angular/router'
+import { Route } from '@angular/router';
 
 export const HOME_ROUTES: Route[] = [
-    {
+  {
+    path: '',
+    loadComponent: () => import('./home.component'),
+    children: [
+      {
         path: '',
-        loadComponent: () => import('./home.component'),
-        children: [
-            {
-                path: ':id',
-                loadComponent: () => import('./conversation/conversation.component') 
-            },
-        ],
-    },
-]
+        loadComponent: () => import('./ui/nothing-to-display.component'),
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./conversation/conversation.component'),
+      },
+    ],
+  },
+];

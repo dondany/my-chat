@@ -12,36 +12,40 @@ import { NewConversationDialogComponent } from './new-conversation-dialog.compon
   standalone: true,
   selector: 'app-conversation-list',
   template: `
-    <div class="px-6 h-14 flex justify-between items-center fill-none">
-      <div
-        (click)="openDialog()"
-        class="flex justify-center items-center py-2 px-4 rounded-full cursor-pointer hover:bg-indigo-50"
-      >
-        <span class="cursor-pointer" routerLink="/home">New Conversation</span>
-        <mat-icon class="material-symbols-outlined">add</mat-icon>
-      </div>
-    </div>
-
-    <ul class="py-2 px-8">
-      @for (conversation of conversations; track $index) {
-        <li
-          (click)="conversationEmitter.emit(conversation)"
-          class="flex gap-3 items-center px-4 py-2 rounded-xl cursor-pointer hover:bg-indigo-50"
+    <div class="">
+      <div class="px-8 h-14 flex justify-between items-center fill-none">
+        <div
+          (click)="openDialog()"
+          class="flex w-full h-12 justify-start items-center py-2 px-4 rounded-xl cursor-pointer border border-gray-200 hover:bg-gray-50 shadow-md"
         >
-          <app-avatar [imgUrls]="conversation.imgUrls!"></app-avatar>
-          <div class="flex flex-col">
-            <span class="text-sm font-medium">{{ conversation.name }}</span>
-            <span
-              class="text-gray-400 text-xs"
-              [ngClass]="{
-                'font-semibold text-gray-700': conversation.newMessage
-              }"
-              >{{ conversation.latestMessage | truncate: 25 }}</span
-            >
-          </div>
-        </li>
-      }
-    </ul>
+          <span class="cursor-pointer" routerLink="/home">
+            New Conversation
+          </span>
+          <mat-icon class="ml-auto material-symbols-outlined">add</mat-icon>
+        </div>
+      </div>
+
+      <ul class="py-2 px-8">
+        @for (conversation of conversations; track $index) {
+          <li
+            (click)="conversationEmitter.emit(conversation)"
+            class="flex gap-3 items-center px-4 py-2 rounded-xl cursor-pointer hover:bg-indigo-50"
+          >
+            <app-avatar [imgUrls]="conversation.imgUrls!"></app-avatar>
+            <div class="flex flex-col">
+              <span class="text-sm font-medium">{{ conversation.name }}</span>
+              <span
+                class="text-gray-400 text-xs"
+                [ngClass]="{
+                  'font-semibold text-gray-700': conversation.newMessage
+                }"
+                >{{ conversation.latestMessage | truncate: 25 }}</span
+              >
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
   `,
   imports: [
     MatIconModule,

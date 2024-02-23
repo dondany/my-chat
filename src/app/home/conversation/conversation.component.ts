@@ -13,9 +13,13 @@ import { MessageBoxComponent } from './ui/message-box.component';
   standalone: true,
   selector: 'app-conversation',
   template: `
-    <div class="flex py-8 h-full">
-      <div class="flex flex-col w-full mr-8 rounded-lg bg-indigo-50">
-        <header class="flex items-center gap-3 p-3 h-14">
+    <div class="h-full flex">
+      <div
+        class="flex w-full h-full flex-col mr-8 rounded-xl bg-indigo-50 shadow-md"
+      >
+        <header
+          class="flex items-center gap-3 p-3 h-14 border-b border-gray-300"
+        >
           <app-avatar
             [imgUrls]="conversationService.currentConversation()?.imgUrls!"
           ></app-avatar>
@@ -69,6 +73,9 @@ import { MessageBoxComponent } from './ui/message-box.component';
     ConversationSettingsComponent,
     MatIconModule,
   ],
+  host: {
+    class: 'h-full',
+  },
 })
 export default class ConversationComponent {
   conversationService = inject(ConversationService);

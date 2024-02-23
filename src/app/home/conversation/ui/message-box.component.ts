@@ -8,44 +8,67 @@ import { MessageDetails } from '../../../shared/model/message';
   standalone: true,
   selector: 'app-message-box',
   template: `
-    <div class="w-full h-full flex flex-col p-2 gap-3 grow">
-      <!-- <div class="overflow-y-scroll container flex flex-col-reverse"> -->
-      <div class="flex flex-col-reverse grow">
-        <ul class="flex flex-col justify-end grow mt-auto">
-          @for (message of messages; track $index) {
-            <li class="flex gap-1 items-center">
-              @if (!message.isCurrentUser) {
-                <img
-                  class="w-8 h-8 rounded-full"
-                  [src]="message.sender?.imgUrl"
-                />
-              }
-              <div
-                [ngClass]="{ 'ml-auto': message.isCurrentUser }"
-                class="flex flex-col"
-              >
+    <div class="w-full h-full relative flex flex-col p-2 gap-3">
+      <div class="grow relative">
+        <div
+          class="overflow-y-scroll absolute top-0 bottom-0 left-0 right-0 flex flex-col-reverse"
+        >
+          <ul class="flex flex-col justify-end grow mt-auto gap-1">
+            @for (message of messages; track $index) {
+              <li class="flex gap-1 items-center">
+                @if (
+                  (!message.isCurrentUser &&
+                    messages[$index - 1] &&
+                    messages[$index - 1].sender !== message.sender) ||
+                  (!message.isCurrentUser && $index === 0)
+                ) {
+                  <img
+                    class="w-8 h-8 rounded-full"
+                    [src]="message.sender?.imgUrl"
+                  />
+                } @else {
+                  <div class="w-8 h8"></div>
+                }
                 <div
-                  class="text-xs"
-                  [ngClass]="{ 'ml-auto': message.isCurrentUser }"
+                  [ngClass]="{ 'ml-auto items-end': message.isCurrentUser }"
+                  class="flex flex-col items-start"
                 >
-                  @if (!message.isCurrentUser) {
-                    {{ message.sender?.username }},
-                  }
-                  {{ message.created | date: 'shortTime' }}
+                  <div
+                    class="text-xs"
+                    [ngClass]="{ 'ml-auto': message.isCurrentUser }"
+                  >
+                    @if (
+                      (!message.isCurrentUser &&
+                        $index > 0 &&
+                        messages[$index - 1].sender !== message.sender) ||
+                      $index === 0
+                    ) {
+                      {{ message.sender?.username }},
+                    }
+                    @if (
+                      ($index > 0 &&
+                        (messages[$index - 1].sender !== message.sender ||
+                          +message.created - +messages[$index - 1].created >
+                            60000)) ||
+                      $index === 0
+                    ) {
+                      {{ message.created | date: 'shortTime' }}
+                    }
+                  </div>
+                  <span
+                    [ngClass]="
+                      message.isCurrentUser
+                        ? 'bg-slate-800 text-white'
+                        : 'bg-white'
+                    "
+                    class="px-3 py-2 rounded-xl shadow-md"
+                    >{{ message.content }}</span
+                  >
                 </div>
-                <span
-                  [ngClass]="
-                    message.isCurrentUser
-                      ? 'bg-slate-800 text-white'
-                      : 'bg-white'
-                  "
-                  class="p-2 rounded-xl"
-                  >{{ message.content }}</span
-                >
-              </div>
-            </li>
-          }
-        </ul>
+              </li>
+            }
+          </ul>
+        </div>
       </div>
 
       <form
@@ -67,9 +90,25 @@ import { MessageDetails } from '../../../shared/model/message';
   `,
   imports: [ReactiveFormsModule, CommonModule, MatIconModule],
   styles: `
-    .container {
-      max-height: calc(100vh - 125px);
-      height: calc(100vh - 125px);
+    /* ===== Scrollbar CSS ===== */
+    /* Firefox */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: rgb(165 180 252) rgb(224 231 255);
+    }
+
+    /* Chrome, Edge, and Safari */
+    *::-webkit-scrollbar {
+      width: 16px;
+    }
+
+    *::-webkit-scrollbar-track {
+      background: rgb(165 180 252);
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background-color: rgb(224 231 255);
+      border-radius: 0px;
     }
   `,
 })
