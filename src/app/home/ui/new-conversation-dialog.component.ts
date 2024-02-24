@@ -141,7 +141,7 @@ export class NewConversationDialogComponent {
       memberIds: [...memberUids, this.authService.user()!.uid],
       members: [
         ...this.members,
-        { ...this.authService.userDetails()!, admin: true },
+        { ...this.authService.userDetails()!, admin: true, owner: true },
       ],
     };
     console.log(newConversation);

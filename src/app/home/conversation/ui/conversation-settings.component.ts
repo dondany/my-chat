@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  computed,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -75,9 +81,12 @@ import { ChangeConversationNameDialogComponent } from './change-conversation-nam
                     <span>{{ member.username }}</span>
                     @if (member.admin) {
                       <span class="text-xs text-gray-400">Administrator</span>
+                      @if (member.owner) {
+                        <span class="text-xs text-gray-400">Owner</span>
+                      }
                     }
                   </div>
-                  @if (admin) {
+                  @if (admin && !member.owner) {
                     <button
                       class="ml-auto flex items-center justify-center p-1 rounded-full cursor-pointer hover:bg-white/80"
                       [matMenuTriggerFor]="menu"
