@@ -92,7 +92,17 @@ export class ConversationService {
               } as Conversation;
             });
           }),
-          tap((c) => console.log(c)),
+          tap((conversations) => {
+            const latestConversationUid =
+              localStorage.getItem('latestConversation');
+            if (!!latestConversationUid) {
+              this.currentConversation$.next(latestConversationUid);
+            } else {
+              if (conversations.length > 0) {
+                this.currentConversation$.next(conversations[0].uid);
+              }
+            }
+          }),
           map((conversations) => ({ conversations })),
         ),
       )
@@ -104,6 +114,9 @@ export class ConversationService {
             imgUrls: this.getImgUrls(conversation),
             name: this.getName(conversation),
           })),
+          tap((currentConversation) =>
+            localStorage.setItem('latestConversation', currentConversation.uid),
+          ),
           map((currentConversation) => ({ currentConversation })),
         ),
       )
