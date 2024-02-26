@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import {
   addDoc,
@@ -16,6 +16,7 @@ import {
   catchError,
   combineLatest,
   defer,
+  distinct,
   exhaustMap,
   filter,
   ignoreElements,
@@ -83,7 +84,6 @@ export class ConversationService {
                 )
                 .filter((lm) => lm.conversationUid === conversation.uid)
                 .find((lm) => lm.messageUid !== conversation.latestMessageUid);
-
               return {
                 ...conversation,
                 imgUrls: this.getImgUrls(conversation),
@@ -92,23 +92,13 @@ export class ConversationService {
               } as Conversation;
             });
           }),
-          tap((conversations) => {
-            const latestConversationUid =
-              localStorage.getItem('latestConversation');
-            if (!!latestConversationUid) {
-              this.currentConversation$.next(latestConversationUid);
-            } else {
-              if (conversations.length > 0) {
-                this.currentConversation$.next(conversations[0].uid);
-              }
-            }
-          }),
           map((conversations) => ({ conversations })),
         ),
       )
       .with(
         this.currentConversation$.pipe(
           switchMap((conversationId) => this.getConversation(conversationId)),
+          filter((conversation) => !!conversation),
           map((conversation) => ({
             ...conversation,
             imgUrls: this.getImgUrls(conversation),
@@ -134,6 +124,13 @@ export class ConversationService {
           catchError((error) => of({ error })),
         ),
       );
+
+    const latestConversationUid = localStorage.getItem('latestConversation');
+    if (!!latestConversationUid) {
+      this.currentConversation$.next(latestConversationUid);
+    } else {
+      this.currentConversation$.next(this.conversations()[0].uid);
+    }
   }
 
   getConversations(userUid: string) {

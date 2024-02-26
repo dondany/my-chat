@@ -1,15 +1,10 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import {
-  collection,
-  doc,
-  query,
-  setDoc,
-  where
-} from 'firebase/firestore';
+import { collection, doc, query, setDoc, where } from 'firebase/firestore';
 import { connect } from 'ngxtension/connect';
 import { collectionData } from 'rxfire/firestore';
 import {
+  EMPTY,
   Observable,
   Subject,
   catchError,
@@ -19,7 +14,8 @@ import {
   ignoreElements,
   map,
   of,
-  switchMap
+  switchMap,
+  tap,
 } from 'rxjs';
 import { FIRESTORE } from '../../app.config';
 import { LatestMessage } from '../model/latest-message';
@@ -42,7 +38,7 @@ export class LatestMessageService {
   //sources
   latestMessages$ = this.authUser$.pipe(
     filter((user) => !!user),
-    switchMap((user) => this.getLatestMessages(user!.uid))
+    switchMap((user) => this.getLatestMessages(user!.uid)),
   );
   update$ = new Subject<LatestMessage>();
   set$ = new Subject<LatestMessage>();
@@ -61,35 +57,35 @@ export class LatestMessageService {
     //reducers
     connect(this.state)
       .with(
-        this.latestMessages$.pipe(map((latestMessages) => ({ latestMessages })))
+        this.latestMessages$.pipe(
+          map((latestMessages) => ({ latestMessages })),
+        ),
       )
       .with(
         this.set$.pipe(
-          exhaustMap((latestMessage) =>
-            this.setLatestMessage(latestMessage)
-          ),
+          exhaustMap((latestMessage) => this.setLatestMessage(latestMessage)),
           ignoreElements(),
-          catchError((error) => of({ error }))
-        )
+          catchError((error) => of({ error })),
+        ),
       );
   }
 
   getLatestMessages(userId: string) {
     const latestMessageCollection = query(
       collection(this.firestore, 'latestMessages'),
-      where('userUid', '==', userId)
+      where('userUid', '==', userId),
     );
 
     return collectionData(latestMessageCollection, {
       idField: 'uid',
-    }) as Observable<LatestMessage[]>;
+    }).pipe(map((o) => o)) as Observable<LatestMessage[]>;
   }
 
   setLatestMessage(latestMessage: LatestMessage) {
-    const uid = latestMessage.conversationUid + "_" + latestMessage.userUid;
+    const uid = latestMessage.conversationUid + '_' + latestMessage.userUid;
     const latestMessageCollection = doc(
       this.firestore,
-      `latestMessages/${uid}`
+      `latestMessages/${uid}`,
     );
     return defer(() => setDoc(latestMessageCollection, latestMessage));
   }

@@ -2,12 +2,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { AsyncPipe } from '@angular/common';
 import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
@@ -144,7 +139,6 @@ export class NewConversationDialogComponent {
         { ...this.authService.userDetails()!, admin: true, owner: true },
       ],
     };
-    console.log(newConversation);
     this.conversationService.add$.next(newConversation);
     this.dialogRef.close();
   }
