@@ -1,12 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import {
-  addDoc,
-  collection,
-  limit,
-  orderBy,
-  query
-} from 'firebase/firestore';
+import { addDoc, collection, limit, orderBy, query } from 'firebase/firestore';
 import { connect } from 'ngxtension/connect';
 import { collectionData } from 'rxfire/firestore';
 import {
@@ -46,7 +40,7 @@ export class MessageService {
 
   //sources
   currentConversation$ = toObservable(
-    this.conversationService.currentConversation
+    this.conversationService.currentConversation,
   );
   add$ = new Subject<string>();
 
@@ -66,12 +60,14 @@ export class MessageService {
     connect(this.state)
       .with(
         this.currentConversation$.pipe(
-          map((currentConversation) => ({ currentConversation }))
-        )
+          map((currentConversation) => ({ currentConversation })),
+        ),
       )
       .with(
         this.currentConversation$.pipe(
-          switchMap((conversation) => conversation ? this.getMessages(conversation!.uid): []),
+          switchMap((conversation) =>
+            conversation ? this.getMessages(conversation!.uid) : [],
+          ),
           tap((messages) => this.addLatestMessage(messages)),
           map((messages) =>
             messages.map((message) => ({
@@ -79,17 +75,17 @@ export class MessageService {
               ...message,
               sender: this.mapMember(message.sender),
               isCurrentUser: this.isCurrentUser(message.sender),
-            }))
+            })),
           ),
-          map((messages) => ({ messages }))
-        )
+          map((messages) => ({ messages })),
+        ),
       )
       .with(
         this.add$.pipe(
           exhaustMap((message) => this.addMessage(message)),
           ignoreElements(),
-          catchError((error) => of({ error }))
-        )
+          catchError((error) => of({ error })),
+        ),
       );
   }
 
@@ -103,7 +99,7 @@ export class MessageService {
     const conversationUid = this.state().currentConversation?.uid;
     const messagesCollection = collection(
       this.firestore,
-      `conversations/${conversationUid}/messages`
+      `conversations/${conversationUid}/messages`,
     );
     return defer(() => addDoc(messagesCollection, newMessage));
   }
@@ -112,11 +108,11 @@ export class MessageService {
     const messagesCollection = query(
       collection(this.firestore, `conversations/${conversationUid}/messages`),
       orderBy('created', 'desc'),
-      limit(50)
+      limit(50),
     );
 
     return collectionData(messagesCollection, { idField: 'uid' }).pipe(
-      map((messages) => [...messages].reverse())
+      map((messages) => [...messages].reverse()),
     ) as Observable<Message[]>;
   }
 
@@ -125,7 +121,7 @@ export class MessageService {
       return undefined;
     }
     return this.state()?.currentConversation?.members?.find(
-      (member) => member.uid === uid
+      (member) => member.uid === uid,
     );
   }
 

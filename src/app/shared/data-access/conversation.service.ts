@@ -17,6 +17,7 @@ import {
   combineLatest,
   defer,
   distinct,
+  distinctUntilKeyChanged,
   exhaustMap,
   filter,
   ignoreElements,
@@ -126,11 +127,14 @@ export class ConversationService {
       );
 
     const latestConversationUid = localStorage.getItem('latestConversation');
-    if (!!latestConversationUid) {
-      this.currentConversation$.next(latestConversationUid);
-    } else {
-      this.currentConversation$.next(this.conversations()[0].uid);
-    }
+
+    // if (!!latestConversationUid) {
+    //   this.currentConversation$.next(latestConversationUid);
+    // } else {
+    //   if (this.conversations().length > 0) {
+    //     this.currentConversation$.next(this.conversations()[0].uid);
+    //   }
+    // }
   }
 
   getConversations(userUid: string) {

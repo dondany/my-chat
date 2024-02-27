@@ -9,6 +9,7 @@ import {
   Subject,
   catchError,
   defer,
+  distinctUntilKeyChanged,
   exhaustMap,
   filter,
   ignoreElements,
@@ -63,6 +64,7 @@ export class LatestMessageService {
       )
       .with(
         this.set$.pipe(
+          distinctUntilKeyChanged('messageUid'),
           exhaustMap((latestMessage) => this.setLatestMessage(latestMessage)),
           ignoreElements(),
           catchError((error) => of({ error })),
@@ -87,6 +89,8 @@ export class LatestMessageService {
       this.firestore,
       `latestMessages/${uid}`,
     );
-    return defer(() => setDoc(latestMessageCollection, latestMessage));
+    return defer(() =>
+      setDoc(latestMessageCollection, latestMessage, { merge: true }),
+    );
   }
 }
